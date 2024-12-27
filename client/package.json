@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@netlify/plugin-nextjs": "^5.9.2",
     "bonjour-service": "^1.3.0",
     "next": "15.1.3",
     "react": "^19.0.0",
