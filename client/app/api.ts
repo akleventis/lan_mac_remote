@@ -52,7 +52,7 @@ export const triggerKeyPress = async (serverIP: string, key_action: string) => {
 // adjustVolume triggers key press and set's the vollume state to value received from server
 export const adjustVolume = async(serverIP: string, key_action: string, setVolume: React.Dispatch<React.SetStateAction<string>>) => {
   // noop if serverIP is not configured
-  if (serverIP == "...searching" || serverIP == "no server found'") {
+  if (serverIP == "...searching" || serverIP == "no server found") {
     return
   }
   const res = await triggerKeyPress(serverIP, key_action)
