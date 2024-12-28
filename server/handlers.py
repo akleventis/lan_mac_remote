@@ -21,7 +21,6 @@ OS_KEY_MAPPING = {
 }
 
 # handlers
-
 def handleKeyPress(action):
     if action not in KEY_MAPPING:
         return {'error': 'Invalid key action'}

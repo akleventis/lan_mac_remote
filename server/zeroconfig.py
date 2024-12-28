@@ -1,5 +1,5 @@
 from zeroconf import ServiceInfo, Zeroconf
-import socket
+import socket, time
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -32,7 +32,10 @@ def register_service():
     try:
         print(f"Registering service {service_name} on port {port}...")
         zeroconf.register_service(info)
-        input("Press Enter to unregister and exit...\n")
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nShutting down...")
     finally:
         zeroconf.unregister_service(info)
         zeroconf.close()
