@@ -1,12 +1,12 @@
-# IOS remote control for mac
-App that allows your phone to trigger certain keypress / os events on a corresponding mac. Created to prevent having to walk over to computer while connected to TV through a physical HDMI cord. Primary for use when streaming media from comptuer to TV. 
+# Local Area Network IOS Remote for Mac
+An app that lets your phone trigger keypresses or OS events on a connected Mac running these servers. Designed to eliminate the need to walk to your computer when it’s connected to a TV via an HDMI cable 
 
 ## Overview
 - python server runs on computer, allows access to os operations (mac)
 - simple react client connected to same network (phone)
 - network discovery through zeroconf
-    - server/zeroconfig.py: registers `lan_mac_remote_server` service which includes local ip address of current machine
-    - client/app/api/scan/route.ts: searches for `lan_mac_remote_server` service on local network
+    - [server/zeroconfig.py](./server/zeroconfig.py): registers `lan_mac_remote_server` service which includes local ip address of current machine
+    - [client/app/api/scan/route.ts](./client/app/api/scan/route.ts): searches for `lan_mac_remote_server` service on local network
 - once service is found, we can send key press requests to the server from our phone through http over tcp/ip
 
 Current keypress actions
@@ -19,7 +19,9 @@ Current keypress actions
 ## Mac OS Setup
 1. Clone repository `git clone https://github.com/akleventis/lan_mac_remote.git`
 
-1. We're going to be running a python server on this device that listens for http events; triggerring operating system keypresses accordingly. 
+1. We're going to be running 2 python servers on this device. 
+    - [zeroconfig.py](./server/zeroconfig.py): broadcasts this device onto the local network 
+    - [server.py](./client/app/api/scan/route.ts): listens for http events; triggerring operating system events accordingly 
 
 1. Ensure `python3` is intalled on system 
    - `brew install python`: installs the latest Python 3 version
