@@ -21,10 +21,8 @@ export default function HomeScreen() {
 
   // fetch current volume from server
   useEffect(() => {
-    if (serverIP !== '...searching' && serverIP !== 'no server found') {
-      adjustVolume(serverIP, "current", setVolume);
-    }
-  }, [serverIP]); 
+    adjustVolume(serverIP, "current", setVolume);
+  }, [serverIP]);
 
   return (
     <div style={styles.container}>
@@ -61,7 +59,7 @@ export default function HomeScreen() {
     </div>
   );
 }
- 
+
 
 const styles = {
   container: {
@@ -69,7 +67,7 @@ const styles = {
     flexDirection: "column" as "column",
     alignItems: "center",
     justifyContent: "center",
-    height: "100vh", 
+    height: "100vh",
   },
   button: {
     margin: "5px 0",
