@@ -1,4 +1,4 @@
-# Local Area Network IOS Remote for Mac
+# Local Area Network IOS Remote for Mac <img width=40 src="https://github.com/user-attachments/assets/b44303e5-06da-40d2-9a08-08285e3dc008" />
 An app that lets your phone trigger keypresses or OS events on a connected Mac running these servers. Designed to eliminate the need to walk to your computer when it’s connected to a TV via an HDMI cable 
 
 ## Overview
