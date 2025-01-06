@@ -1,0 +1,27 @@
+.react-colorful {
+  position: relative !important;
+  width: auto !important;
+  height: 75vh !important;
+  width: 100% !important;
+}
+
+.Modal {
+  display: flex;
+  top: 550px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  background-color: papayawhip;
+}
+
+.ReactModal__Overlay {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.ReactModal__Content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  background: rgb(255, 255, 255) !important;
+  border-radius: 10px !important;
+}
