@@ -5,6 +5,7 @@ import { scanNetwork, triggerKeyPress, adjustVolume, reScan } from './api';
 import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
 import { Poppins } from 'next/font/google';
+import { HexColorPicker } from 'react-colorful';
 
 // manually add ip in the overrideIP variable below to skip network scan
 const overrideIP = '';
@@ -19,6 +20,7 @@ export default function HomeScreen() {
   const [serverIP, setServerIP] = useState('...searching');
   const [volume, setVolume] = useState('');
   const [i, incrRescan] = useState(0);
+  const [color, setColor] = useState('red');
 
   // allow override on known network
   useEffect(() => {
@@ -35,89 +37,103 @@ export default function HomeScreen() {
   }, [serverIP]);
 
   return (
-    <div style={styles.container}>
-      <div className={poppins.className}>ip: {serverIP}</div>
+    <div
+      style={{
+        background: `linear-gradient(to bottom, ${color},#000000)`,
+      }}
+    >
+      <div style={styles.container}>
+        <div className={poppins.className}>ip: {serverIP}</div>
 
-      <div style={styles.row}>
-        <button
-          style={styles.item}
-          onClick={() => triggerKeyPress(serverIP, 'previous_track')}
-        >
-          <Image
-            width='25'
-            height='25'
-            alt='previous track'
-            src={`/images/light/track-prev.png`}
+        <div style={styles.row}>
+          <button
+            style={styles.item}
+            onClick={() => triggerKeyPress(serverIP, 'previous_track')}
+          >
+            <Image
+              width='25'
+              height='25'
+              alt='previous track'
+              src={`/images/light/track-prev.png`}
+            />
+          </button>
+          <button
+            style={styles.item}
+            onClick={() => triggerKeyPress(serverIP, 'next_track')}
+          >
+            <Image
+              width='25'
+              height='25'
+              alt='next track'
+              src={`/images/light/track-next.png`}
+            />
+          </button>
+        </div>
+
+        <div style={styles.row}>
+          <button
+            style={styles.item}
+            onClick={() => triggerKeyPress(serverIP, 'left_arrow')}
+          >
+            <Image
+              width='25'
+              height='25'
+              alt='left arrow key'
+              src={`/images/light/arrow-left.png`}
+            />
+          </button>
+          <button
+            style={styles.item}
+            onClick={() => triggerKeyPress(serverIP, 'play_pause')}
+          >
+            <Image
+              width='25'
+              height='25'
+              alt='play/pause'
+              src={`/images/light/play.png`}
+            />
+          </button>
+          <button
+            style={styles.item}
+            onClick={() => triggerKeyPress(serverIP, 'right_arrow')}
+          >
+            <Image
+              width='25'
+              height='25'
+              alt='right arrow key'
+              src={`/images/light/arrow-right.png`}
+            />
+          </button>
+        </div>
+
+        <div style={styles.buttonRow}>
+          <BrightnessControls serverIP={serverIP} />
+
+          <button
+            style={styles.item}
+            onClick={() => reScan(i, incrRescan, setServerIP)}
+          >
+            <Image
+              width='25'
+              height='25'
+              alt='rescan'
+              src={`/images/light/rescan.png`}
+            />
+          </button>
+
+          <VolumeControls serverIP={serverIP} setVolume={setVolume} />
+        </div>
+
+        <div className={poppins.className}>volume: {volume}</div>
+
+        <div>
+          <HexColorPicker
+            className='colorPicker'
+            color={color}
+            onChange={setColor}
           />
-        </button>
-        <button
-          style={styles.item}
-          onClick={() => triggerKeyPress(serverIP, 'next_track')}
-        >
-          <Image
-            width='25'
-            height='25'
-            alt='next track'
-            src={`/images/light/track-next.png`}
-          />
-        </button>
+        </div>
       </div>
-
-      <div style={styles.row}>
-        <button
-          style={styles.item}
-          onClick={() => triggerKeyPress(serverIP, 'left_arrow')}
-        >
-          <Image
-            width='25'
-            height='25'
-            alt='left arrow key'
-            src={`/images/light/arrow-left.png`}
-          />
-        </button>
-        <button
-          style={styles.item}
-          onClick={() => triggerKeyPress(serverIP, 'play_pause')}
-        >
-          <Image
-            width='25'
-            height='25'
-            alt='play/pause'
-            src={`/images/light/play.png`}
-          />
-        </button>
-        <button
-          style={styles.item}
-          onClick={() => triggerKeyPress(serverIP, 'right_arrow')}
-        >
-          <Image
-            width='25'
-            height='25'
-            alt='right arrow key'
-            src={`/images/light/arrow-right.png`}
-          />
-        </button>
-      </div>
-
-      <div style={styles.buttonRow}>
-        <BrightnessControls serverIP={serverIP} />
-
-        <button
-          style={styles.item}
-          onClick={() => reScan(i, incrRescan, setServerIP)}
-        >
-          <Image
-            width='25'
-            height='25'
-            alt='rescan'
-            src={`/images/light/rescan.png`}
-          />
-        </button>
-
-        <VolumeControls serverIP={serverIP} setVolume={setVolume} />
-      </div>
-
-      <div className={poppins.className}>volume: {volume}</div>
     </div>
   );
 }
@@ -130,8 +146,6 @@ const styles = {
     justifyContent: 'center',
     height: '100vh',
     color: 'white',
-    backgroundColor: '#434343',
-    background: 'linear-gradient(to bottom, #434343,#000000)',
   },
   item: {
     width: 50,
