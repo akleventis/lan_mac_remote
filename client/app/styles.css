@@ -1,3 +1,21 @@
-/* .react-colorful__alpha-gradient, .react-colorful__saturation {
-    visibility: hidden;
-} */
+.color-picker .react-colorful {
+  position: relative;
+  width: auto;
+  height: 50vh;
+  margin-top: 20px;
+}
+
+.Modal {
+  display: flex;
+  top: 550px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  background-color: papayawhip;
+  width: 500px;
+}
+
+.close-button {
+  position: relative;
+  right: 20px;
+}

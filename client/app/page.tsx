@@ -6,6 +6,8 @@ import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
 import { Poppins } from 'next/font/google';
 import { HexColorPicker } from 'react-colorful';
+import Modal from 'react-modal';
+import '../../client/app/styles.css';
 
 // manually add ip in the overrideIP variable below to skip network scan
 const overrideIP = '';
@@ -35,6 +37,16 @@ export default function HomeScreen() {
   useEffect(() => {
     adjustVolume(serverIP, 'current', setVolume);
   }, [serverIP]);
+
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
 
   return (
     <div
@@ -127,11 +139,32 @@ export default function HomeScreen() {
         <div className={poppins.className}>volume: {volume}</div>
 
         <div>
-          <HexColorPicker
-            className='colorPicker'
-            color={color}
-            onChange={setColor}
-          />
+          <button style={styles.item} onClick={openModal}>
+            <Image
+              width='25'
+              height='25'
+              alt='colorpicker'
+              src={`/images/light/color-picker.png`}
+            />
+          </button>
+          <Modal isOpen={modalIsOpen} onRequestClose={closeModal}>
+            <button
+              className='close-button'
+              style={styles.item}
+              onClick={closeModal}
+            >
+              <Image
+                width='25'
+                height='25'
+                alt='next track'
+                src={`/images/dark/x.png`}
+              />
+            </button>
+
+            <div className='color-picker'>
+              <HexColorPicker color={color} onChange={setColor} />
+            </div>
+          </Modal>
         </div>
       </div>
     </div>
@@ -179,5 +212,10 @@ const styles = {
     marginLeft: 80,
     marginRight: 80,
     gap: 20,
+  },
+  closeButton: {
+    display: 'flex',
+    flex: 1,
+    justifyContent: 'flex-end',
   },
 };
