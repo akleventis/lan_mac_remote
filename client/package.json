@@ -21,6 +21,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5"
+    "@types/react-modal": "^3.16.3",
+    "typescript": "^5",
+    "usehooks-ts": "^3.1.0"
   }
 }

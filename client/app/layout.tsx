@@ -1,21 +1,27 @@
-import HomeScreen from "./page"
+import HomeScreen from './page';
 
 export const metadata = {
   title: 'lan mac remote',
   description: 'local area network remote for mac',
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <HomeScreen/>
+    <html lang='en'>
+      <body style={styles.body}>
+        <HomeScreen />
         {/* {children} */}
-        </body>
+      </body>
     </html>
-  )
+  );
 }
+
+const styles = {
+  body: {
+    margin: 0,
+  },
+};

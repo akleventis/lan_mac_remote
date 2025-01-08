@@ -8,12 +8,13 @@ import { Poppins } from 'next/font/google';
 import { HexColorPicker } from 'react-colorful';
 import Modal from 'react-modal';
 import '../../client/app/styles.css';
+import { useLocalStorage } from './hooks/useLocalStorage';
 
 // manually add ip in the overrideIP variable below to skip network scan
 const overrideIP = '';
 
 const poppins = Poppins({
-  weight: ['400', '700'], // Add the weights you need
+  weight: ['400', '700'],
   subsets: ['latin'],
   variable: '--font-poppins',
 });
@@ -22,7 +23,8 @@ export default function HomeScreen() {
   const [serverIP, setServerIP] = useState('...searching');
   const [volume, setVolume] = useState('');
   const [i, incrRescan] = useState(0);
-  const [color, setColor] = useState('red');
+  const [color, setColor] = useLocalStorage('backgroundColor', '#434343');
+  const [modalIsOpen, setIsOpen] = useState(false);
 
   // allow override on known network
   useEffect(() => {
@@ -37,8 +39,6 @@ export default function HomeScreen() {
   useEffect(() => {
     adjustVolume(serverIP, 'current', setVolume);
   }, [serverIP]);
-
-  const [modalIsOpen, setIsOpen] = React.useState(false);
 
   function openModal() {
     setIsOpen(true);
@@ -136,9 +136,10 @@ export default function HomeScreen() {
           <VolumeControls serverIP={serverIP} setVolume={setVolume} />
         </div>
 
-        <div className={poppins.className}>volume: {volume}</div>
+        <span className={poppins.className}>Volume:</span>
+        <span className={poppins.className}>{volume}</span>
 
-        <div>
+        <div style={styles.colorModalButton}>
           <button style={styles.item} onClick={openModal}>
             <Image
               width='25'
@@ -147,25 +148,22 @@ export default function HomeScreen() {
               src={`/images/light/color-picker.png`}
             />
           </button>
-          <Modal isOpen={modalIsOpen} onRequestClose={closeModal}>
-            <button
-              className='close-button'
-              style={styles.item}
-              onClick={closeModal}
-            >
-              <Image
-                width='25'
-                height='25'
-                alt='next track'
-                src={`/images/dark/x.png`}
-              />
-            </button>
-
-            <div className='color-picker'>
-              <HexColorPicker color={color} onChange={setColor} />
-            </div>
-          </Modal>
         </div>
+
+        <Modal isOpen={modalIsOpen} onRequestClose={closeModal}>
+          <button className='close-button' onClick={closeModal}>
+            <Image
+              width='25'
+              height='25'
+              alt='next track'
+              src={`/images/dark/x.png`}
+            />
+          </button>
+
+          <div className='color-picker'>
+            <HexColorPicker color={color} onChange={setColor} />
+          </div>
+        </Modal>
       </div>
     </div>
   );
@@ -181,8 +179,8 @@ const styles = {
     color: 'white',
   },
   item: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     color: 'red',
     margin: 10,
     padding: 7,
@@ -217,5 +215,13 @@ const styles = {
     display: 'flex',
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  colorModalButton: {
+    margin: 20,
+  },
+  volumeRow: {
+    flexDirection: 'row' as 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 };

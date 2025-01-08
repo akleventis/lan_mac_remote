@@ -1,8 +1,7 @@
 .color-picker .react-colorful {
   position: relative;
   width: auto;
-  height: 50vh;
-  margin-top: 20px;
+  height: 75vh;
 }
 
 .Modal {
@@ -12,10 +11,29 @@
   right: 40px;
   bottom: 40px;
   background-color: papayawhip;
-  width: 500px;
+}
+
+.ReactModal__Overlay {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.ReactModal__Content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  background: rgb(255, 255, 255) !important;
+  border-radius: 10px !important;
+}
+
+.color-picker {
+  flex: 0 0 100%;
 }
 
 .close-button {
-  position: relative;
-  right: 20px;
+  display: flex;
+  justify-content: end;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background-color: #ffffff;
 }
