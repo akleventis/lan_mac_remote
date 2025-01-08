@@ -9,6 +9,10 @@ import { HexColorPicker } from 'react-colorful';
 import Modal from 'react-modal';
 import '../../client/app/styles.css';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import AnimatedProgressProvider from './providers/AnimatedProgressProvider';
+import { easeQuadInOut } from 'd3-ease';
 
 // manually add ip in the overrideIP variable below to skip network scan
 const overrideIP = '';
@@ -21,7 +25,7 @@ const poppins = Poppins({
 
 export default function HomeScreen() {
   const [serverIP, setServerIP] = useState('...searching');
-  const [volume, setVolume] = useState('');
+  const [volume, setVolume] = useState(75);
   const [i, incrRescan] = useState(0);
   const [color, setColor] = useLocalStorage('backgroundColor', '#434343');
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -121,23 +125,61 @@ export default function HomeScreen() {
         <div style={styles.buttonRow}>
           <BrightnessControls serverIP={serverIP} />
 
-          <button
-            style={styles.item}
-            onClick={() => reScan(i, incrRescan, setServerIP)}
-          >
-            <Image
-              width='25'
-              height='25'
-              alt='rescan'
-              src={`/images/light/rescan.png`}
-            />
-          </button>
+          <div style={styles.column}>
+            <div
+              className={poppins.className}
+              style={{ width: '60px', margin: '10px' }}
+            >
+              <AnimatedProgressProvider easingFunction={easeQuadInOut} repeat>
+                {(value) => {
+                  const roundedValue = Math.round(volume);
+                  return (
+                    <CircularProgressbar
+                      strokeWidth={6}
+                      value={volume}
+                      text={`${roundedValue}`}
+                      styles={buildStyles({
+                        // Rotation of path and trail, in number of turns (0-1)
+                        rotation: 0.5,
+
+                        // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                        strokeLinecap: 'round',
+
+                        // Text size
+                        textSize: '24px',
+
+                        // How long animation takes to go from one percentage to another, in seconds
+                        pathTransition: 'none',
+
+                        // Can specify path transition in more detail, or remove it entirely
+                        // pathTransition: 'none',
+
+                        // Colors
+                        pathColor: `rgba(255, 255, 255)`,
+                        textColor: '#FFFFFF',
+                        trailColor: 'rgba(0, 0, 0, 0)',
+                        backgroundColor: '#3e98c7',
+                      })}
+                    />
+                  );
+                }}
+              </AnimatedProgressProvider>
+            </div>
+            <button
+              style={styles.item}
+              onClick={() => reScan(i, incrRescan, setServerIP)}
+            >
+              <Image
+                width='25'
+                height='25'
+                alt='rescan'
+                src={`/images/light/rescan.png`}
+              />
+            </button>
+          </div>
 
           <VolumeControls serverIP={serverIP} setVolume={setVolume} />
         </div>
-
-        <span className={poppins.className}>Volume:</span>
-        <span className={poppins.className}>{volume}</span>
 
         <div style={styles.colorModalButton}>
           <button style={styles.item} onClick={openModal}>
@@ -209,7 +251,7 @@ const styles = {
     marginTop: 20,
     marginLeft: 80,
     marginRight: 80,
-    gap: 20,
+    gap: 25,
   },
   closeButton: {
     display: 'flex',
