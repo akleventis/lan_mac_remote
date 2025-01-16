@@ -18,7 +18,7 @@ class AnimatedProgressProvider extends React.Component {
         this.setState({
           isAnimated: !this.state.isAnimated,
         });
-      }, this.props.duration * 1000);
+      }, this.props.duration * 500);
     } else {
       this.setState({
         isAnimated: !this.state.isAnimated,
@@ -41,7 +41,7 @@ class AnimatedProgressProvider extends React.Component {
             this.state.isAnimated ? this.props.valueEnd : this.props.valueStart,
           ],
           timing: {
-            duration: this.props.duration * 1000,
+            duration: this.props.duration * 500,
             ease: this.props.easingFunction,
           },
         })}
