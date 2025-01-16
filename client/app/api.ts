@@ -1,8 +1,10 @@
+import { toast } from "react-toastify";
+
 // set client <-> server port
 const port = 5001;
 
 // valid endpoints configured in server
-export type ValidEndpoint = "discover_ping" | "os_action"
+export type ValidEndpoint = "discover_ping" | "os_action" | "verify_hammerspoon"
 
 // valid http methods for request
 export type HttpMethod = "GET" | "POST" // ...etc
@@ -23,6 +25,7 @@ export const sendRequest = async (method: HttpMethod, endpoint: ValidEndpoint, i
   return response
 }
 
+// scanNetwork invokes the internal scan function to discover our server's network device's IP address using Zeroconf
 export const scanNetwork = async (setServerIP: React.Dispatch<React.SetStateAction<string>>) => {
   const response = await fetch('/api/scan');
   const data = await response.json();
@@ -33,19 +36,38 @@ export const scanNetwork = async (setServerIP: React.Dispatch<React.SetStateActi
   setServerIP("no server found")
 }
 
+// verifyHammerspoon checks to see if hammerspoon is running
+export const verifyHammerspoon = async(serverIP: string) => {
+  // noop if serverIP is not configured
+  if (serverIP == "...searching" || serverIP == "no server found") {
+    return
+  }
+
+  const response = await sendRequest("GET", "verify_hammerspoon", serverIP);
+  const data = await response.json();
+  if (data.status == "not_running") {
+    toast("Application 'Hammerspoon' not detected. Some media functionality may be limited.");
+  }
+}
+
 // triggerKeyPress sends the keypress action to the /key endpoint in server.py
 export const triggerKeyPress = async (serverIP: string, key_action: string) => {
+  // noop if serverIP is not configured
+  if (serverIP == "...searching" || serverIP == "no server found") {
+    return
+  }
+    
   try {
     const queryParams = new URLSearchParams();
     queryParams.append("action", key_action);
 
     const response = await sendRequest("GET", "os_action", serverIP, undefined, queryParams);
     if (!response.ok) {
-      alert(`Failed to send request: ${response.status}`);
+      toast(`Failed to send request: ${response.status}`);
     }
     return response
   } catch (error) {
-    alert(`Failed to send request: ${(error as Error).message}`);
+    toast(`Failed to send request: ${(error as Error).message}`);
   }
 };
 
@@ -55,15 +77,21 @@ export const adjustVolume = async(serverIP: string, key_action: string, setVolum
   if (serverIP == "...searching" || serverIP == "no server found") {
     return
   }
+
   const res = await triggerKeyPress(serverIP, key_action)
   if (res && res.ok) {
     const data = await res.json();
+    // if computer is hooked up to external media source, volume key presses are not functional
+    if (data.volume == "external_connection") {
+      toast("external media source detected, remote volume unavailable")
+      return
+    }
     if (data.volume !== "") {
       setVolume(data.volume);
+      return
     }
-  } else {
+  } 
     console.log("failed to adjust volume");
-  }
 }
 
 // reScan scans the network again for /discovery_ping response in case of new network location

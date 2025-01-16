@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS, cross_origin
-from handlers import KEY_MAPPING, OS_KEY_MAPPING, handleKeyPress, handleCustomOSAction
+from handlers import KEY_MAPPING, OS_KEY_MAPPING, handleKeyPress, handle_custom_os_action, verify_hammerspoon
 import sys, logging
 
 print("interpreter: ", sys.executable)
@@ -24,11 +24,17 @@ def key_action():
         return response
     
     if action in OS_KEY_MAPPING:
-        data = handleCustomOSAction(action)
+        data = handle_custom_os_action(action)
         response = make_response(jsonify(data), 200)
         return response
     
     return jsonify({'error': 'Invalid or missing action'}), 400
+
+@app.route("/verify_hammerspoon")
+@cross_origin()
+def verify():
+    response = verify_hammerspoon()
+    return response
 
 @app.errorhandler(404)
 def not_found():

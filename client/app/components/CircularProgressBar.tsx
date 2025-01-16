@@ -12,6 +12,12 @@ interface CircularProgressBarProps {
 export const CircularProgressBar = ({ volume }: CircularProgressBarProps) => {
   const prevVolume = usePrevious(volume);
 
+  if (volume == "external_connection") {
+    return (
+      <></>
+    )
+  }
+
   return (
     <div style={{ width: '60px', margin: '10px' }}>
       <AnimatedProgressProvider

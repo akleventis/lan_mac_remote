@@ -1,7 +1,7 @@
 import HomeScreen from './page';
 
 export const metadata = {
-  title: 'lan mac remote',
+  title: 'lan remote',
   description: 'local area network remote for mac',
 };
 

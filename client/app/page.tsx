@@ -1,8 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { ToastContainer } from "react-toastify";
 import { Poppins } from 'next/font/google';
-import { scanNetwork, triggerKeyPress, adjustVolume, reScan } from './api';
+import { scanNetwork, triggerKeyPress, adjustVolume, reScan, verifyHammerspoon } from './api';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
@@ -34,9 +35,12 @@ export default function HomeScreen() {
     }
   }, [overrideIP, i]);
 
-  // fetch current volume from server
   useEffect(() => {
+    console.log("in use effect")
+    // fetch current volume from server
     adjustVolume(serverIP, 'current', setVolume);
+    // check if hammerspoon is running
+    verifyHammerspoon(serverIP)
   }, [serverIP]);
 
   const openModal = () => {
@@ -50,7 +54,20 @@ export default function HomeScreen() {
       }}
       className={poppins.className}
     >
+      <ToastContainer />
       <div style={styles.container}>
+        <button
+          style={styles.item}
+          onClick={() => triggerKeyPress(serverIP, 'sleep')}
+        >
+          <Image
+            width='25'
+            height='25'
+            alt='sleep'
+            src={`/images/sleep.png`}
+          />
+        </button>
+
         <span>ip: {serverIP}</span>
 
         <div style={styles.row}>
@@ -106,7 +123,7 @@ export default function HomeScreen() {
 
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress(serverIP, 'space')}
+            onClick={() => triggerKeyPress(serverIP, 'spacebar')}
           >
             <Image
               width='25'
