@@ -60,7 +60,6 @@ func (s *Server) HandleKeystroke() http.HandlerFunc {
 			apiResponse(w, 200, &Response{Status: "success"})
 			return
 		}
-
 		apiResponse(w, 400, &Response{Status: "invalid_command"})
 	}
 }

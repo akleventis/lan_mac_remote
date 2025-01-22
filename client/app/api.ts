@@ -9,20 +9,52 @@ export type ValidEndpoint = "keystroke" | "volume" | "sleep" | "verify_hammerspo
 // valid http methods for request
 export type HttpMethod = "GET" 
 
-// sendRequest is a helper function that sends a general http request and returns the full response
-export const sendRequest = async (method: HttpMethod, endpoint: ValidEndpoint, ip: string, signal?: AbortSignal, queryParams?: URLSearchParams): Promise<Response> => {
-  let url = `http://${ip}:${port}/${endpoint}`;
+interface DefaultResponse {
+  status: string,
+}
 
-  const queryString = queryParams?.toString();
-  if (queryString) {
-    url += `?${queryString}`;
+interface VolumeResponse {
+  status: string,
+  volume: string
+}
+
+// houses information for an api request
+interface RequestOptions {
+  method: HttpMethod,
+  endpoint: ValidEndpoint,
+  serverIP: string,
+  queryParams?: Record<string, string | number>
+}
+
+// apiRequest formats and sends an API request to the specified endpoint, returning a response matching the provided interface type
+export const apiRequest = async <T>(options: RequestOptions): Promise<T> => {
+  const {method, endpoint, serverIP, queryParams} = options
+  let url = `http://${serverIP}:${port}/${endpoint}`
+
+  if (queryParams) {
+    if (queryParams) {
+      const queryString = new URLSearchParams(
+        Object.entries(queryParams).map(([key, value]) => [key, String(value)])
+      ).toString();
+      url += `?${queryString}`;
+    }
   }
 
-  const response = await fetch(url, { 
-    method: method,
-    signal: signal,
-  });
-  return response
+  try {
+    const response = await fetch(url, {
+      method,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || `Request failed with status ${response.status}`);
+    }
+
+    return (await response.json()) as T;
+  } catch (error) {
+    console.error("api request error: ", error);
+    throw error;
+  }
 }
 
 // scanNetwork invokes the internal scan function to discover our server's network device's IP address using Zeroconf
@@ -38,23 +70,22 @@ export const scanNetwork = async (setServerIP: React.Dispatch<React.SetStateActi
 
 // verifyHammerspoon checks to see if hammerspoon is running
 export const verifyHammerspoon = async(serverIP: string) => {
-  // noop if serverIP is not configured
   if (serverIP == "...searching" || serverIP == "no server found") {
     return
   }
 
-  try {
-    const response = await sendRequest("GET", "verify_hammerspoon", serverIP);
-    if (response && response.ok) {
-      const data = await response.json();
-      if (data.status == "not_running") {
-        toast("Application 'Hammerspoon' not detected. Some media functionality may be limited.");
-      }
+  try {    
+    const data = await apiRequest<DefaultResponse>({
+      method: "GET",
+      endpoint: "verify_hammerspoon",
+      serverIP: serverIP,
+    })
+    if (data.status == "not_running") {
+      toast("Application 'Hammerspoon' not detected. Media functionality will be limited.");
     }
-  } catch (error) {
-    toast(`Failed to send request: ${(error as Error).message}`);
+  } catch (error){
+    console.error("hammerspoon verification error: ", error)
   }
-
 }
 
 // triggerKeyPress sends the keypress action to the /key endpoint in server.py
@@ -62,17 +93,18 @@ export const triggerKeyPress = async (serverIP: string, key_action: string) => {
   if (serverIP == "...searching" || serverIP == "no server found") {
     return
   }
-    
-  try {
-    const queryParams = new URLSearchParams();
-    queryParams.append("action", key_action);
 
-    const response = await sendRequest("GET", "keystroke", serverIP, undefined, queryParams);
-    if (!response.ok) {
-      toast(`Failed to send request: ${response.status}`);
-    }
-  } catch (error) {
-    toast(`Failed to send request: ${(error as Error).message}`);
+  try {    
+    await apiRequest<DefaultResponse>({
+      method: "GET",
+      endpoint: "keystroke",
+      serverIP: serverIP,
+      queryParams: {
+        "action": key_action
+      }
+    })
+  } catch (error){
+    console.error("hammerspoon verification error: ", error)
   }
 };
 
@@ -82,24 +114,22 @@ export const adjustVolume = async(serverIP: string, key_action: string, setVolum
     return
   }
 
-  try {
-    const queryParams = new URLSearchParams();
-    queryParams.append("action", key_action);
-    const response = await sendRequest("GET", "volume", serverIP, undefined, queryParams);
-    if (response) {
-      const data = await response.json();
-      if (response.ok) {
-        if (data.volume == "external_connection") {
-          toast("external media source detected, remote volume unavailable")
-          return
-        }
-        setVolume(data.volume);
-        return
+  try {    
+    const data = await apiRequest<VolumeResponse>({
+      method: "GET",
+      endpoint: "volume",
+      serverIP: serverIP,
+      queryParams: {
+        "action": key_action
       }
-      toast(`error setting volume ${data.status}`)
+    })
+    if (data.volume == "external_connection") {
+      toast("external media source detected, remote volume unavailable")
+    } else {
+      setVolume(data.volume)
     }
-  } catch (error) {
-    toast(`failed to send request: ${(error as Error).message}`);
+  } catch (error){
+    console.error("adjust volume error: ", error)
   }
 };
 
