@@ -36,7 +36,6 @@ export default function HomeScreen() {
   }, [overrideIP, i]);
 
   useEffect(() => {
-    console.log("in use effect")
     // fetch current volume from server
     adjustVolume(serverIP, 'current', setVolume);
     // check if hammerspoon is running
