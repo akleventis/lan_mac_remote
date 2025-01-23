@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ToastContainer } from "react-toastify";
 import { Poppins } from 'next/font/google';
-import { scanNetwork, triggerKeyPress, adjustVolume, reScan, verifyHammerspoon } from './api';
+import { scanNetwork, triggerKeyPress, adjustVolume, reScan, verifyHammerspoon, triggerSleep } from './api';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
 import { CircularProgressBar } from './components/CircularProgressBar';
 import { ColorPickerModal } from './components/ColorPickerModal';
+import {serverSearching} from './api'
 
 // manually add ip in the overrideIP variable below to skip network scan
 const overrideIP = '';
@@ -20,7 +21,7 @@ const poppins = Poppins({
 });
 
 export default function HomeScreen() {
-  const [serverIP, setServerIP] = useState('...searching');
+  const [serverIP, setServerIP] = useState(serverSearching);
   const [volume, setVolume] = useState('');
   const [i, incrRescan] = useState(0);
   const [color, setColor] = useLocalStorage('backgroundColor', '#434343');
@@ -57,7 +58,7 @@ export default function HomeScreen() {
       <div style={styles.container}>
         <button
           style={styles.item}
-          onClick={() => triggerKeyPress(serverIP, 'sleep')}
+          onClick={() => triggerSleep(serverIP)}
         >
           <Image
             width='25'

@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# broadcast service using dns-sd
+dns-sd -R "lan_mac_remote_server" _http._tcp local 8080 &
+DNS_SD_PID=$!
+
+# 3 second delay for network registration
+sleep 3
+
 # get script's directory
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
@@ -10,9 +17,6 @@ get_local_ip() {
   ipconfig getifaddr en0 2>/dev/null
 }
 
-# broadcast service using dns-sd
-dns-sd -R "lan_mac_remote_server" _http._tcp local 8080 &
-DNS_SD_PID=$!
 
 # spin up go server 
 go build -o server_binary server/api.go server/handlers.go

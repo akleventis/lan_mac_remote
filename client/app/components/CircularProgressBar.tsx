@@ -4,6 +4,7 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { easeQuadInOut } from 'd3-ease';
 import usePrevious from '../hooks/usePrevious';
+import {externalMediaSource} from '../api'
 
 interface CircularProgressBarProps {
   volume: string;
@@ -12,7 +13,7 @@ interface CircularProgressBarProps {
 export const CircularProgressBar = ({ volume }: CircularProgressBarProps) => {
   const prevVolume = usePrevious(volume);
 
-  if (volume == "external_connection") {
+  if (volume == externalMediaSource) {
     return (
       <></>
     )

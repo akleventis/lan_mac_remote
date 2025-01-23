@@ -5,23 +5,12 @@ export const metadata = {
   description: 'local area network remote for mac',
 };
 
-export default function RootLayout({
-  // children,
-}: {
-  // children: React.ReactNode;
-}) {
+export default function RootLayout() {
   return (
     <html lang='en'>
-      <body style={styles.body}>
+      <body style={{margin: 0}}>
         <HomeScreen />
-        {/* {children} */}
       </body>
     </html>
   );
 }
-
-const styles = {
-  body: {
-    margin: 0,
-  },
-};

@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// KeyMapping is a map of valid actions to their corresponding key codes
 var KeyMapping = map[string]int{
 	"play_pause":      100,
 	"spacebar":        49,
@@ -22,21 +23,25 @@ var KeyMapping = map[string]int{
 	"brightness_down": 145,
 }
 
+// VolumeKeyMapping defines valid volume control actions
 var VolumeKeyMapping = map[string]bool{
 	"volume_up":   true,
 	"volume_down": true,
 	"current":     true,
 }
 
+// Response represents the default api response structure
 type Response struct {
 	Status string `json:"status"`
 }
 
+// VolumeResponse represents the api response structure for volume-related actions
 type VolumeResponse struct {
-	Response
+	Status string `json:"status"`
 	Volume string `json:"volume"`
 }
 
+// apiResponse is a helper which formats and sends an http json response back to the client
 func apiResponse(w http.ResponseWriter, code int, resp interface{}) {
 	r, err := json.Marshal(resp)
 	if err != nil {
@@ -48,12 +53,13 @@ func apiResponse(w http.ResponseWriter, code int, resp interface{}) {
 	w.Write(r)
 }
 
-func (s *Server) HandleKeystroke() http.HandlerFunc {
+// HandleKeystroke triggers a keystroke via applescript based on the provided action query param
+func HandleKeystroke() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		action := r.FormValue("action")
 
 		if keyCode, exists := KeyMapping[action]; exists {
-			if err := handleKeystroke(keyCode); err != nil {
+			if err := triggerKeystroke(keyCode); err != nil {
 				apiResponse(w, 500, &Response{Status: err.Error()})
 				return
 			}
@@ -64,24 +70,26 @@ func (s *Server) HandleKeystroke() http.HandlerFunc {
 	}
 }
 
-func (s *Server) HandleVolume() http.HandlerFunc {
+// HandleVolume controls os volume actions (current, volume_up, or volume_down) based on the provided action query parameter
+func HandleVolume() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		action := r.FormValue("action")
 
 		if VolumeKeyMapping[action] {
 			resp, err := adjustVolume(action)
 			if err != nil {
-				apiResponse(w, 500, &VolumeResponse{Response: Response{Status: err.Error()}})
+				apiResponse(w, 500, &VolumeResponse{Status: err.Error()})
 				return
 			}
-			apiResponse(w, 200, &VolumeResponse{Volume: resp, Response: Response{Status: "success"}})
+			apiResponse(w, 200, &VolumeResponse{Volume: resp, Status: "success"})
 			return
 		}
-		apiResponse(w, 400, &VolumeResponse{Response: Response{Status: "invalid_command"}})
+		apiResponse(w, 400, &VolumeResponse{Status: "invalid_command"})
 	}
 }
 
-func (s *Server) HandleSleep() http.HandlerFunc {
+// HandleSleep puts computer to sleep using applescript
+func HandleSleep() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		script := "tell application \"System Events\" to sleep"
 		cmd := exec.Command("osascript", "-e", script)
@@ -93,9 +101,10 @@ func (s *Server) HandleSleep() http.HandlerFunc {
 	}
 }
 
-func (s *Server) VerifyHammerspoon() http.HandlerFunc {
+// VerifyHammerspoon checks if Hammerspoon is running on current system
+func VerifyHammerspoon() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		isRunning, err := handleHammerspoon()
+		isRunning, err := verifyHammerspoon()
 		if err != nil {
 			apiResponse(w, 500, &Response{Status: err.Error()})
 			return
@@ -108,7 +117,8 @@ func (s *Server) VerifyHammerspoon() http.HandlerFunc {
 	}
 }
 
-func handleKeystroke(keyCode int) error {
+// triggerKeystroke is a helper for triggering a keystroke using applescript using the specified key code
+func triggerKeystroke(keyCode int) error {
 	script := fmt.Sprintf(`tell application "System Events" to key code %d`, keyCode)
 	cmd := exec.Command("osascript", "-e", script)
 	if err := cmd.Run(); err != nil {
@@ -117,6 +127,7 @@ func handleKeystroke(keyCode int) error {
 	return nil
 }
 
+// adjustVolume is a helper for managing system volume: getting, increasing, or decreasing it
 func adjustVolume(command string) (string, error) {
 	script := "output volume of (get volume settings)"
 	cmd := exec.Command("osascript", "-e", script)
@@ -129,7 +140,7 @@ func adjustVolume(command string) (string, error) {
 	output := strings.TrimSpace(out.String())
 	currentVolume, err := strconv.Atoi(output)
 	if err != nil {
-		return "external_connection", err
+		return "external_media_source", err
 	}
 
 	var newVolume int
@@ -150,7 +161,8 @@ func adjustVolume(command string) (string, error) {
 	return strconv.Itoa(newVolume), nil
 }
 
-func handleHammerspoon() (bool, error) {
+// verifyHammerspoon is a helper for checking if Hammerspoon application is running on system
+func verifyHammerspoon() (bool, error) {
 	script := `
     tell application "System Events"
         (name of processes) contains "Hammerspoon"

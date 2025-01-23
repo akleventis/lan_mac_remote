@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// 0.0.0.0 esures service is available on the private network interface for other devices connected to the same local network
 const address = "0.0.0.0:5001"
 
 type Server struct {
@@ -19,12 +20,12 @@ func main() {
 		router: mux.NewRouter(),
 	}
 
-	s.router.HandleFunc("/keystroke", s.HandleKeystroke()).Methods("GET")
-	s.router.HandleFunc("/volume", s.HandleVolume()).Methods("GET")
-	s.router.HandleFunc("/sleep", s.HandleSleep()).Methods("GET")
-	s.router.HandleFunc("/verify_hammerspoon", s.VerifyHammerspoon()).Methods("GET")
+	s.router.HandleFunc("/keystroke", HandleKeystroke()).Methods("GET")
+	s.router.HandleFunc("/volume", HandleVolume()).Methods("GET")
+	s.router.HandleFunc("/sleep", HandleSleep()).Methods("GET")
+	s.router.HandleFunc("/verify_hammerspoon", VerifyHammerspoon()).Methods("GET")
 
 	handler := cors.Default().Handler(s.router)
-	logrus.Infof("Server running on http://%s", address)
+	logrus.Infof("Server running on http://%s\n", address)
 	http.ListenAndServe(address, handler)
 }

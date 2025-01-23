@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { HexColorPicker } from 'react-colorful';
 import Modal from 'react-modal';
@@ -28,7 +28,7 @@ export const ColorPickerModal = ({
           <Image
             width='25'
             height='25'
-            alt='next track'
+            alt='exit'
             src={`/images/x.png`}
           />
         </button>

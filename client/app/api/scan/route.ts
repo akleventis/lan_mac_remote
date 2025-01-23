@@ -3,6 +3,7 @@ import Bonjour from 'bonjour-service';
 
 const remoteServer = "lan_mac_remote_server"
 
+// searches local area network for an http service named "lan_mac_remote_server"
 export async function GET() {
   const bonjour = new Bonjour();
 
