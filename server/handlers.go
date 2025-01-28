@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // KeyMapping is a map of valid actions to their corresponding key codes
@@ -38,7 +40,7 @@ type Response struct {
 // VolumeResponse represents the api response structure for volume-related actions
 type VolumeResponse struct {
 	Status string `json:"status"`
-	Volume string `json:"volume"`
+	Volume string `json:"volume,omitempty"`
 }
 
 // apiResponse is a helper which formats and sends an http json response back to the client
@@ -51,6 +53,12 @@ func apiResponse(w http.ResponseWriter, code int, resp interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(r)
+}
+
+func HandlePing() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		apiResponse(w, 200, &Response{Status: "success"})
+	}
 }
 
 // HandleKeystroke triggers a keystroke via applescript based on the provided action query param
@@ -78,6 +86,7 @@ func HandleVolume() http.HandlerFunc {
 		if VolumeKeyMapping[action] {
 			resp, err := adjustVolume(action)
 			if err != nil {
+				log.Error(err)
 				apiResponse(w, 500, &VolumeResponse{Status: err.Error()})
 				return
 			}
@@ -138,9 +147,13 @@ func adjustVolume(command string) (string, error) {
 	}
 
 	output := strings.TrimSpace(out.String())
+	if output == "missing value" {
+		return "external_media_source", nil
+	}
+
 	currentVolume, err := strconv.Atoi(output)
 	if err != nil {
-		return "external_media_source", err
+		return "", err
 	}
 
 	var newVolume int

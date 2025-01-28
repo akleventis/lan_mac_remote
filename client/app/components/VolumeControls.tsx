@@ -1,21 +1,22 @@
 import React from 'react';
-import { adjustVolume } from '../../app/api';
+import { adjustVolume, externalMediaSource } from '../../app/api';
 import Image from 'next/image';
 
 interface VolumeControlsProps {
-  serverIP: string;
+  volume: string;
   setVolume: React.Dispatch<React.SetStateAction<string>>;
 }
 
+
 export const VolumeControls = ({
-  serverIP,
   setVolume,
+  volume
 }: VolumeControlsProps) => {
   return (
     <div style={styles.column}>
       <button
         style={styles.item}
-        onClick={() => adjustVolume(serverIP, 'volume_up', setVolume)}
+        onClick={() => adjustVolume('volume_up', volume, setVolume)}
       >
         <Image
           width='25'
@@ -26,7 +27,7 @@ export const VolumeControls = ({
       </button>
       <button
         style={styles.item}
-        onClick={() => adjustVolume(serverIP, 'volume_down', setVolume)}
+        onClick={() => adjustVolume('volume_down', volume, setVolume)}
       >
         <Image
           width='25'

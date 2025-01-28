@@ -17,11 +17,6 @@ if [ -z "$LOCAL_IP" ]; then
   exit 1
 fi
 
-# spin up go server 
-go build -o server_binary server/api.go server/handlers.go
-./server_binary &
-GO_PID=$!
-
 # spin up dev server on all network interfaces -> enables accessibility from any device on the local network.
 SERVER_IP=$LOCAL_IP npm --prefix ./client run dev -- -H 0.0.0.0 &
 EXPO_PID=$!
@@ -37,11 +32,10 @@ else
 fi
 
 # process information
-echo "Go process PID: $GO_PID"
 echo "Expo process PID: $EXPO_PID"
 
 # clean exit
-trap "echo 'Stopping processes...'; kill -TERM $GO_PID $EXPO_PID; wait; exit" SIGINT SIGTERM
+trap "echo 'Stopping processes...'; kill -TERM $EXPO_PID; wait; exit" SIGINT SIGTERM
 
 # wait for background processes to finish
 wait

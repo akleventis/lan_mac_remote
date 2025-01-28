@@ -20,6 +20,7 @@ func main() {
 		router: mux.NewRouter(),
 	}
 
+	s.router.HandleFunc("/ping", HandlePing()).Methods("GET")
 	s.router.HandleFunc("/keystroke", HandleKeystroke()).Methods("GET")
 	s.router.HandleFunc("/volume", HandleVolume()).Methods("GET")
 	s.router.HandleFunc("/sleep", HandleSleep()).Methods("GET")

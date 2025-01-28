@@ -2,16 +2,12 @@ import React from 'react';
 import { triggerKeyPress } from '../../app/api';
 import Image from 'next/image';
 
-interface BrightnessControlsProps {
-  serverIP: string;
-}
-
-export const BrightnessControls = ({ serverIP }: BrightnessControlsProps) => {
+export const BrightnessControls = () => {
   return (
     <div style={styles.column}>
       <button
         style={styles.item}
-        onClick={() => triggerKeyPress(serverIP, 'brightness_up')}
+        onClick={() => triggerKeyPress('brightness_up')}
       >
         <Image
           width='25'
@@ -22,7 +18,7 @@ export const BrightnessControls = ({ serverIP }: BrightnessControlsProps) => {
       </button>
       <button
         style={styles.item}
-        onClick={() => triggerKeyPress(serverIP, 'brightness_down')}
+        onClick={() => triggerKeyPress('brightness_down')}
       >
         <Image
           width='25'
