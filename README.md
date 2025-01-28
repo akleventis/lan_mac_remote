@@ -1,30 +1,23 @@
 # Local Area Network Remote for Macs <img width=40 src="https://github.com/user-attachments/assets/b44303e5-06da-40d2-9a08-08285e3dc008" />
-Application that allows your phone to trigger keypresses/OS events on a Mac over HTTP
+Application that allows your phone to trigger keypresses/OS events on a Mac over HTTP using TCP/IP
 
 ## Overview
-<img align='right' width=200 src="screen.PNG" />
+<img align='right' width=170 src="screen.PNG" />
 
 [Go server](./server/api.go): Runs on the mac and handles triggering OS operations based on incoming http requests
 
-[React client](./client/): Runs on a device connected to the same network and acts as the suer interface for sending comammnds.
+[React client](./client/): Runs on a device connected to the same network and acts as the user interface for sending commands.
 
-Network discovery with Zeroconf
-  - The server registers itself as a serviced named `lan_mac_remote_server` using Zeroconf via dns-sd
-  - Registration:
-    - `dns-sd -R "lan_mac_remote_server" _http._tcp local 8080`
-  - This advertises the service along with the local IP address of the Mac on the network
-  - The client uses Zeroconf to search for the service on the local network see [client/app/api/scan/route.ts](./client/app/api/scan/route.ts)
-  - Once the service is discovered, the React client can send http requests to the server (via TCP/IP) from your phone to trigger keypresses or OS events on the mac
+[Build script](./start_app.sh): Retrieves the machine’s local IP address, injects it into the client via an environment variable, and launches both the client and server
 
 ### Available OS Actions
-- play/pause
-- prev/next track
-- brightness up/down
-- volume up/down
-- left/right arrow key press
+- play / pause
+- prev / next track
+- brightness up / down
+- volume up / down
+- arrow key left / right
 - spacebar
 - sleep
-
 
 ## Setup Instructions
 1. Clone repository `git clone https://github.com/akleventis/lan_mac_remote.git`
@@ -57,7 +50,7 @@ end)
 - click *Reload Config* in the Hammerspoon menu
 > Note: Once enabled, this will override the default functionality of F7, F8, and F9. You can disable exit Hammerspoon anytime to restore their original behavior.
 
-4. Install qrencode for ease of ip address landing page access via mobile device
+4. Install qrencode for ease of IP address landing page access via mobile device
     - `brew install qrencode`
 
 5. Install npm dependencies
@@ -68,12 +61,11 @@ end)
 
 |command | description|
 | :--: | :--: |
-|`dns-sd -R "lan_mac_remote_server" _http._tcp local 8080`| broadcast service on the local network|
-|`cd client ; npm run dev -- -H 0.0.0.0`|runs client-side app on all network interfaces (enables accessibility from any device on the local network) |
-|`go build -o server_binary server/api.go server/handlers.go ./server_binary &`| builds & runs go server |
+|`./start_client.sh`| runs client-side app on all network interfaces (enables accessibility from any device on network) |
+|`./start_client.sh`| builds & runs go server |
 |`./start_app.sh`|script which spins up all services|
 
-> Note: You may need to update [start_app.sh](start_app.sh) permissions to make executable: `chmod +x start_app.sh`
+> Note: You may need to update script permissions to make executable: `chmod +x start_app.sh start_client.sh start_server.sh`
 
 ### Alias for ease of running in any working directory
 - Add this line to your ~/.zshrc (or ~/.bashrc)

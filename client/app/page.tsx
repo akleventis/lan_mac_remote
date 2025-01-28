@@ -3,16 +3,12 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ToastContainer } from "react-toastify";
 import { Poppins } from 'next/font/google';
-import { scanNetwork, triggerKeyPress, adjustVolume, reScan, verifyHammerspoon, triggerSleep } from './api';
+import { remoteServerIP, triggerKeyPress, adjustVolume, verifyHammerspoon, triggerSleep } from './api';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
 import { CircularProgressBar } from './components/CircularProgressBar';
 import { ColorPickerModal } from './components/ColorPickerModal';
-import {serverSearching} from './api'
-
-// manually add ip in the overrideIP variable below to skip network scan
-const overrideIP = '';
 
 const poppins = Poppins({
   weight: ['400', '700'],
@@ -21,27 +17,14 @@ const poppins = Poppins({
 });
 
 export default function HomeScreen() {
-  const [serverIP, setServerIP] = useState(serverSearching);
   const [volume, setVolume] = useState('');
-  const [i, incrRescan] = useState(0);
   const [color, setColor] = useLocalStorage('backgroundColor', '#434343');
   const [isOpen, setIsOpen] = useState(false);
 
-  // allow override on known network
   useEffect(() => {
-    if (overrideIP) {
-      setServerIP(overrideIP);
-    } else {
-      scanNetwork(setServerIP);
-    }
-  }, [overrideIP, i]);
-
-  useEffect(() => {
-    // fetch current volume from server
-    adjustVolume(serverIP, 'current', setVolume);
-    // check if hammerspoon is running
-    verifyHammerspoon(serverIP)
-  }, [serverIP]);
+    adjustVolume('current', volume, setVolume); // fetch current volume from server
+    verifyHammerspoon() // verify hammerspoon is running
+  }, []);
 
   const openModal = () => {
     setIsOpen(true);
@@ -58,7 +41,7 @@ export default function HomeScreen() {
       <div style={styles.container}>
         <button
           style={styles.item}
-          onClick={() => triggerSleep(serverIP)}
+          onClick={() => triggerSleep()}
         >
           <Image
             width='25'
@@ -68,12 +51,12 @@ export default function HomeScreen() {
           />
         </button>
 
-        <span>ip: {serverIP}</span>
+        <span>ip: {remoteServerIP}</span>
 
         <div style={styles.row}>
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress(serverIP, 'previous_track')}
+            onClick={() => triggerKeyPress('previous_track')}
           >
             <Image
               width='25'
@@ -85,7 +68,7 @@ export default function HomeScreen() {
 
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress(serverIP, 'play_pause')}
+            onClick={() => triggerKeyPress('play_pause')}
           >
             <Image
               width='25'
@@ -97,7 +80,7 @@ export default function HomeScreen() {
 
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress(serverIP, 'next_track')}
+            onClick={() => triggerKeyPress('next_track')}
           >
             <Image
               width='25'
@@ -111,7 +94,7 @@ export default function HomeScreen() {
         <div style={styles.row}>
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress(serverIP, 'left_arrow')}
+            onClick={() => triggerKeyPress('left_arrow')}
           >
             <Image
               width='25'
@@ -123,7 +106,7 @@ export default function HomeScreen() {
 
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress(serverIP, 'spacebar')}
+            onClick={() => triggerKeyPress('spacebar')}
           >
             <Image
               width='25'
@@ -135,7 +118,7 @@ export default function HomeScreen() {
 
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress(serverIP, 'right_arrow')}
+            onClick={() => triggerKeyPress('right_arrow')}
           >
             <Image
               width='25'
@@ -147,25 +130,13 @@ export default function HomeScreen() {
         </div>
 
         <div style={styles.buttonRow}>
-          <BrightnessControls serverIP={serverIP} />
+          <BrightnessControls />
 
           <div style={styles.column}>
             <CircularProgressBar volume={volume} />
-
-            <button
-              style={styles.item}
-              onClick={() => reScan(i, incrRescan, setServerIP)}
-            >
-              <Image
-                width='25'
-                height='25'
-                alt='rescan'
-                src={`/images/rescan.png`}
-              />
-            </button>
           </div>
 
-          <VolumeControls setVolume={setVolume} serverIP={serverIP} />
+          <VolumeControls setVolume={setVolume} volume={volume}/>
         </div>
 
         <div style={styles.colorModalButton}>
