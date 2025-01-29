@@ -1,14 +1,16 @@
-# Local Area Network Remote for Macs <img width=40 src="https://github.com/user-attachments/assets/b44303e5-06da-40d2-9a08-08285e3dc008" />
+# Local Area Network Remote for Macs <img width=40 src="assets/icon.png" />
 Application that allows your phone to trigger keypresses/OS events on a Mac over HTTP using TCP/IP
 
 ## Overview
-<img align='right' width=170 src="screen.PNG" />
+<img align='right' width=170 src="assets/screen.png" />
 
-[Go server](./server/api.go): Runs on the mac and handles triggering OS operations based on incoming http requests
+[Go server](./server/api.go): Runs on the mac and handles triggering OS operations based on incoming http requests. Includes fileserver for Next.js static build
 
 [React client](./client/): Runs on a device connected to the same network and acts as the user interface for sending commands.
 
-[Build script](./start_app.sh): Retrieves the machine’s local IP address, injects it into the client via an environment variable, and launches both the client and server
+[Build script dev](./scripts/start_app_dev.sh): Retrieves the machine’s local IP address, injects it into the client via an environment variable, and launches both the client and server
+
+[Build script prod](./scripts/start_app_prod.sh): Generates a static Next.js build and serves it via the Go server. The frontend and backend share the same IP address as they are hosted together
 
 ### Available OS Actions
 - play / pause
@@ -19,11 +21,18 @@ Application that allows your phone to trigger keypresses/OS events on a Mac over
 - spacebar
 - sleep
 
-## Setup Instructions
-1. Clone repository `git clone https://github.com/akleventis/lan_mac_remote.git`
+## Download
+1. Unzip [init_export.zip](./init_export.zip)
+```
+init_export/
+├── client/
+│   ├── out/       # Contains Next.js static build
+├── go_binary      # Go binary executable to run the application
+```
+2. Run `./path/to/init_export/go_binary`
+> 	Note: Working on converting this into a standalone application for easier installation and usage.
 
-1. Ensure [go 1.23](https://go.dev/doc/install) is installed on system 
-
+## Requirements
 1. Download and configure [Hammerspoon](https://www.hammerspoon.org/) (media controls proved to be quite tricky)
 - See [this section](#hammerspoon) of readme for more info
 - After installation, open the app and follow steps allowing accessibility
@@ -50,26 +59,32 @@ end)
 - click *Reload Config* in the Hammerspoon menu
 > Note: Once enabled, this will override the default functionality of F7, F8, and F9. You can disable exit Hammerspoon anytime to restore their original behavior.
 
-4. Install qrencode for ease of IP address landing page access via mobile device
+### Developer Setup
+2. Clone repository `git clone https://github.com/akleventis/lan_mac_remote.git`
+
+3. Ensure [go 1.23](https://go.dev/doc/install) is installed on system 
+
+4. Install qrencode for ease of IP address landing page access via mobile device (dev only)
     - `brew install qrencode`
 
-5. Install npm dependencies
+5. Install npm dependencies (dev only)
     -  `cd client ; npm install`
 
-## Run app
+## Run app 
 1. Spin up Hammerspoon daemon
 
 |command | description|
 | :--: | :--: |
-|`./start_client.sh`| runs client-side app on all network interfaces (enables accessibility from any device on network) |
-|`./start_client.sh`| builds & runs go server |
-|`./start_app.sh`|script which spins up all services|
+|[start_client.sh](./scripts/start_client.sh)| Starts the client app locally, making it accessible on the network |
+|[start_server.sh](./scripts/start_server.sh)| Builds and runs the Go server |
+|[start_app_dev.sh](./scripts/start_app_dev.sh)| Starts both the client and server for local development |
+|[start_app_prod.sh](./scripts/start_app_prod.sh)| Builds the Next.js static export and starts the server for production |
 
-> Note: You may need to update script permissions to make executable: `chmod +x start_app.sh start_client.sh start_server.sh`
+> Note: You may need to update script permissions to make executable: `chmod +x start_client.sh start_server.sh start_app_dev.sh start_app_prod.sh`
 
 ### Alias for ease of running in any working directory
 - Add this line to your ~/.zshrc (or ~/.bashrc)
-  - `alias lan_remote='./path/to/lan_mac_remote/start_app.sh';`
+  - `alias lan_remote='./path/to/lan_mac_remote/scripts/start_app_dev.sh';`
 - Next & Go server will spin up with a single command `lan_remote`
 - Scan the qr code to be redirected to IP address of remote
 

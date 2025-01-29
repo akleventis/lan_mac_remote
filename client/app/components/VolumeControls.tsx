@@ -1,6 +1,5 @@
 import React from 'react';
-import { adjustVolume, externalMediaSource } from '../../app/api';
-import Image from 'next/image';
+import { adjustVolume } from '../../app/api';
 
 interface VolumeControlsProps {
   volume: string;
@@ -18,7 +17,7 @@ export const VolumeControls = ({
         style={styles.item}
         onClick={() => adjustVolume('volume_up', volume, setVolume)}
       >
-        <Image
+        <img
           width='25'
           height='25'
           alt='volume up'
@@ -29,7 +28,7 @@ export const VolumeControls = ({
         style={styles.item}
         onClick={() => adjustVolume('volume_down', volume, setVolume)}
       >
-        <Image
+        <img
           width='25'
           height='25'
           alt='volume down'

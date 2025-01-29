@@ -1,6 +1,5 @@
 import React from 'react';
 import { triggerKeyPress } from '../../app/api';
-import Image from 'next/image';
 
 export const BrightnessControls = () => {
   return (
@@ -9,7 +8,7 @@ export const BrightnessControls = () => {
         style={styles.item}
         onClick={() => triggerKeyPress('brightness_up')}
       >
-        <Image
+        <img
           width='25'
           height='25'
           alt='brightness up'
@@ -20,7 +19,7 @@ export const BrightnessControls = () => {
         style={styles.item}
         onClick={() => triggerKeyPress('brightness_down')}
       >
-        <Image
+        <img
           width='25'
           height='25'
           alt='brightness down'

@@ -1,21 +1,25 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
-
-// 0.0.0.0 esures service is available on the private network interface for other devices connected to the same local network
-const address = "0.0.0.0:5001"
 
 type Server struct {
 	router *mux.Router
 }
 
 func main() {
+	localIP := GetOutboundIP()
+	serverAddress := fmt.Sprintf("%s:%s", localIP, "5001")
+
+	nextExport := GetOutDir()
+	fileServer := http.FileServer(http.Dir(nextExport))
+
 	s := &Server{
 		router: mux.NewRouter(),
 	}
@@ -26,7 +30,16 @@ func main() {
 	s.router.HandleFunc("/sleep", HandleSleep()).Methods("GET")
 	s.router.HandleFunc("/verify_hammerspoon", VerifyHammerspoon()).Methods("GET")
 
+	// file server for static client build
+	s.router.PathPrefix("/").Handler(http.StripPrefix("/", fileServer))
+
 	handler := cors.Default().Handler(s.router)
-	logrus.Infof("Server running on http://%s\n", address)
-	http.ListenAndServe(address, handler)
+	log.Infof("server running on http://%s\n", serverAddress)
+
+	qrCode := GenerateQRCode("http://" + serverAddress)
+	if qrCode != "" {
+		log.Infof("\n%+s", qrCode)
+	}
+
+	http.ListenAndServe(serverAddress, handler)
 }
