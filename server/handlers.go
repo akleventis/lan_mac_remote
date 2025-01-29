@@ -55,6 +55,7 @@ func apiResponse(w http.ResponseWriter, code int, resp interface{}) {
 	w.Write(r)
 }
 
+// HandlePing sends a success response upon /ping
 func HandlePing() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiResponse(w, 200, &Response{Status: "success"})

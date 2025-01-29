@@ -26,7 +26,7 @@ echo "Lan Remote URL: $QR_URL"
 
 # generate QR code
 if command -v qrencode >/dev/null 2>&1; then
-  qrencode -t UTF8 "$QR_URL"
+  qrencode -t UTF8 -m 0 "$QR_URL"
 else
   echo "Warning: qrencode not installed. Install it to generate QR codes."
 fi

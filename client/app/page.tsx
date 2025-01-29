@@ -1,9 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { ToastContainer } from "react-toastify";
 import { Poppins } from 'next/font/google';
-import { remoteServerIP, triggerKeyPress, adjustVolume, verifyHammerspoon, triggerSleep } from './api';
+import { triggerKeyPress, adjustVolume, verifyHammerspoon, triggerSleep } from './api';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
@@ -43,7 +42,7 @@ export default function HomeScreen() {
           style={styles.item}
           onClick={() => triggerSleep()}
         >
-          <Image
+          <img
             width='25'
             height='25'
             alt='sleep'
@@ -51,14 +50,12 @@ export default function HomeScreen() {
           />
         </button>
 
-        <span>ip: {remoteServerIP}</span>
-
         <div style={styles.row}>
           <button
             style={styles.item}
             onClick={() => triggerKeyPress('previous_track')}
           >
-            <Image
+            <img
               width='25'
               height='25'
               alt='previous track'
@@ -70,7 +67,7 @@ export default function HomeScreen() {
             style={styles.item}
             onClick={() => triggerKeyPress('play_pause')}
           >
-            <Image
+            <img
               width='25'
               height='25'
               alt='play/pause'
@@ -82,7 +79,7 @@ export default function HomeScreen() {
             style={styles.item}
             onClick={() => triggerKeyPress('next_track')}
           >
-            <Image
+            <img
               width='25'
               height='25'
               alt='next track'
@@ -96,7 +93,7 @@ export default function HomeScreen() {
             style={styles.item}
             onClick={() => triggerKeyPress('left_arrow')}
           >
-            <Image
+            <img
               width='25'
               height='25'
               alt='left arrow key'
@@ -108,7 +105,7 @@ export default function HomeScreen() {
             style={styles.item}
             onClick={() => triggerKeyPress('spacebar')}
           >
-            <Image
+            <img
               width='25'
               height='25'
               alt='space'
@@ -120,7 +117,7 @@ export default function HomeScreen() {
             style={styles.item}
             onClick={() => triggerKeyPress('right_arrow')}
           >
-            <Image
+            <img
               width='25'
               height='25'
               alt='right arrow key'
@@ -141,7 +138,7 @@ export default function HomeScreen() {
 
         <div style={styles.colorModalButton}>
           <button style={styles.item} onClick={openModal}>
-            <Image
+            <img
               width='25'
               height='25'
               alt='colorpicker'

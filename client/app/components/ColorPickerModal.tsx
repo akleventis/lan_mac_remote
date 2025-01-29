@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import { HexColorPicker } from 'react-colorful';
 import Modal from 'react-modal';
 import '../../../client/app/styles.css';
@@ -25,7 +24,7 @@ export const ColorPickerModal = ({
     <div>
       <Modal isOpen={isOpen} onRequestClose={closeModal} ariaHideApp={false}>
         <button style={styles.item} onClick={closeModal}>
-          <Image
+          <img
             width='25'
             height='25'
             alt='exit'

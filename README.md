@@ -4,11 +4,13 @@ Application that allows your phone to trigger keypresses/OS events on a Mac over
 ## Overview
 <img align='right' width=170 src="screen.PNG" />
 
-[Go server](./server/api.go): Runs on the mac and handles triggering OS operations based on incoming http requests
+[Go server](./server/api.go): Runs on the mac and handles triggering OS operations based on incoming http requests. Includes fileserver for Next.js static build
 
 [React client](./client/): Runs on a device connected to the same network and acts as the user interface for sending commands.
 
-[Build script](./start_app.sh): Retrieves the machine’s local IP address, injects it into the client via an environment variable, and launches both the client and server
+[Build script dev](./start_app_dev.sh): Retrieves the machine’s local IP address, injects it into the client via an environment variable, and launches both the client and server
+
+[Build script prod](./start_app_prod.sh): Generates a static Next.js build and serves it via the Go server. The frontend and backend share the same IP address as they are hosted together
 
 ### Available OS Actions
 - play / pause
@@ -61,11 +63,12 @@ end)
 
 |command | description|
 | :--: | :--: |
-|`./start_client.sh`| runs client-side app on all network interfaces (enables accessibility from any device on network) |
-|`./start_client.sh`| builds & runs go server |
-|`./start_app.sh`|script which spins up all services|
+|`./start_client.sh`| Starts the client app locally, making it accessible on the network |
+|`./start_server.sh`| Builds and runs the Go server |
+|`./start_app_dev.sh`| Starts both the client and server for local development |
+|`./start_app_prod.sh`| Builds the Next.js static export and starts the server for production |
 
-> Note: You may need to update script permissions to make executable: `chmod +x start_app.sh start_client.sh start_server.sh`
+> Note: You may need to update script permissions to make executable: `chmod +x ./start_client.sh ./start_server.sh ./start_app_dev.sh ./start_app_prod.sh`
 
 ### Alias for ease of running in any working directory
 - Add this line to your ~/.zshrc (or ~/.bashrc)
