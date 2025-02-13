@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ToastContainer } from "react-toastify";
 import { Poppins } from 'next/font/google';
-import { triggerKeyPress, adjustVolume, verifyHammerspoon, triggerSleep } from './api';
+import { triggerKeyPress, triggerMediaKeyPress, adjustVolume, triggerSleep } from './api';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
@@ -22,7 +22,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     adjustVolume('current', volume, setVolume); // fetch current volume from server
-    verifyHammerspoon() // verify hammerspoon is running
   }, []);
 
   const openModal = () => {
@@ -53,7 +52,7 @@ export default function HomeScreen() {
         <div style={styles.row}>
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress('previous_track')}
+            onClick={() => triggerMediaKeyPress('previous_track')}
           >
             <img
               width='25'
@@ -65,7 +64,7 @@ export default function HomeScreen() {
 
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress('play_pause')}
+            onClick={() => triggerMediaKeyPress('play_pause')}
           >
             <img
               width='25'
@@ -77,7 +76,7 @@ export default function HomeScreen() {
 
           <button
             style={styles.item}
-            onClick={() => triggerKeyPress('next_track')}
+            onClick={() => triggerMediaKeyPress('next_track')}
           >
             <img
               width='25'

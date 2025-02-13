@@ -7,7 +7,7 @@ cd "$SCRIPTPATH"
 
 # spin up go server 
 echo "Building Go server..."
-go build -o ../go_binary ../server/api.go ../server/handlers.go ../server/utils.go
+go build -o ../go_binary ../server/api.go ../server/handlers.go ../server/utils.go ../server/nsevent.go
 
 cd .. 
 ./go_binary dev &

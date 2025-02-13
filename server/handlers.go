@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -11,14 +12,12 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/skip2/go-qrcode"
 )
 
 // KeyMapping is a map of valid actions to their corresponding key codes
 var KeyMapping = map[string]int{
-	"play_pause":      100,
 	"spacebar":        49,
-	"previous_track":  98,
-	"next_track":      101,
 	"left_arrow":      123,
 	"right_arrow":     124,
 	"brightness_up":   144,
@@ -41,6 +40,10 @@ type Response struct {
 type VolumeResponse struct {
 	Status string `json:"status"`
 	Volume string `json:"volume,omitempty"`
+}
+
+type QRResponse struct {
+	QRCode string `json:"qr_code"`
 }
 
 // apiResponse is a helper which formats and sends an http json response back to the client
@@ -72,6 +75,19 @@ func HandleKeystroke() http.HandlerFunc {
 				apiResponse(w, 500, &Response{Status: err.Error()})
 				return
 			}
+			apiResponse(w, 200, &Response{Status: "success"})
+			return
+		}
+		apiResponse(w, 400, &Response{Status: "invalid_command"})
+	}
+}
+
+// HandleMediaKeyStroke triggers a system-level event for media keys
+func HandleMediaKeyStroke() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		action := r.FormValue("action")
+		if mediaKey, exists := MediaKeyMapping[action]; exists {
+			sendMediaKey(mediaKey)
 			apiResponse(w, 200, &Response{Status: "success"})
 			return
 		}
@@ -124,6 +140,26 @@ func VerifyHammerspoon() http.HandlerFunc {
 			return
 		}
 		apiResponse(w, 200, &Response{Status: "not_running"})
+	}
+}
+
+func GetQRCode() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		qrCode, err := qrcode.New(ServerURL, qrcode.Medium)
+		if err != nil {
+			apiResponse(w, 500, "Failed to generate QR code")
+			return
+		}
+
+		b, err := qrCode.PNG(256)
+		if err != nil {
+			apiResponse(w, 500, "Failed to generate QR code")
+			return
+		}
+		qrBase64 := base64.StdEncoding.EncodeToString(b)
+		qrBase64 = fmt.Sprintf("data:image/png;base64,%s", qrBase64)
+
+		apiResponse(w, 200, &QRResponse{QRCode: qrBase64})
 	}
 }
 
