@@ -1,16 +1,15 @@
-# Local Area Network Remote for Macs <img width=40 src="assets/icon.png" />
+# Local Area Network Remote for Macs <img width=40 src="assets/icon.png" style="vertical-align: text-bottom;" />
 Application that allows your phone to trigger keypresses/OS events on a Mac over HTTP using TCP/IP
 
+[Download Mac Remote v1.0.0](https://github.com/akleventis/lan_mac_remote/releases/tag/v1.0.0)
 ## Overview
 <img align='right' width=170 src="assets/screen.png" />
 
 [Go server](./server/api.go): Runs on the mac and handles triggering OS operations based on incoming http requests. Includes fileserver for Next.js static build
 
-[React client](./client/): Runs on a device connected to the same network and acts as the user interface for sending commands.
+[React client](./client/): Static Next.js build served through go server. Runs on a device connected to the same network and acts as the user interface for sending commands.
 
-[Build script dev](./scripts/start_app_dev.sh): Retrieves the machine’s local IP address, injects it into the client via an environment variable, and launches both the client and server
-
-[Build script prod](./scripts/start_app_prod.sh): Generates a static Next.js build and serves it via the Go server. The frontend and backend share the same IP address as they are hosted together
+[Electron](./electron/): Desktop application UI with a menu tray interface. Opens a window to display the QR code and server IP address.
 
 ### Available OS Actions
 - play / pause
@@ -21,45 +20,7 @@ Application that allows your phone to trigger keypresses/OS events on a Mac over
 - spacebar
 - sleep
 
-## Download
-1. Unzip [init_export.zip](./init_export.zip)
-```
-init_export/
-├── client/
-│   ├── out/       # Contains Next.js static build
-├── go_binary      # Go binary executable to run the application
-```
-2. Run `./path/to/init_export/go_binary`
-> 	Note: Working on converting this into a standalone application for easier installation and usage.
-
-## Requirements
-1. Download and configure [Hammerspoon](https://www.hammerspoon.org/) (media controls proved to be quite tricky)
-- See [this section](#hammerspoon) of readme for more info
-- After installation, open the app and follow steps allowing accessibility
-- click *Open Config* in the Hammerspoon menu and copy this into the [init.lua](./init.lua) file
-```lua
--- Simulate Media Previous Track Key (F7)
-hs.hotkey.bind({}, "F7", function()
-    hs.eventtap.event.newSystemKeyEvent("PREVIOUS", true):post()
-    hs.eventtap.event.newSystemKeyEvent("PREVIOUS", false):post()
-end)
-
--- Simulate Media Play/Pause Key (F8)
-hs.hotkey.bind({}, "F8", function()
-    hs.eventtap.event.newSystemKeyEvent("PLAY", true):post()
-    hs.eventtap.event.newSystemKeyEvent("PLAY", false):post()
-end)
-
--- Simulate Media Next Track Key (F9)
-hs.hotkey.bind({}, "F9", function()
-    hs.eventtap.event.newSystemKeyEvent("NEXT", true):post()
-    hs.eventtap.event.newSystemKeyEvent("NEXT", false):post()
-end)
-```
-- click *Reload Config* in the Hammerspoon menu
-> Note: Once enabled, this will override the default functionality of F7, F8, and F9. You can disable exit Hammerspoon anytime to restore their original behavior.
-
-### Developer Setup
+## Developer Setup
 2. Clone repository `git clone https://github.com/akleventis/lan_mac_remote.git`
 
 3. Ensure [go 1.23](https://go.dev/doc/install) is installed on system 
@@ -70,38 +31,12 @@ end)
 5. Install npm dependencies (dev only)
     -  `cd client ; npm install`
 
-## Run app 
-1. Spin up Hammerspoon daemon
-
 |command | description|
 | :--: | :--: |
 |[start_client.sh](./scripts/start_client.sh)| Starts the client app locally, making it accessible on the network |
 |[start_server.sh](./scripts/start_server.sh)| Builds and runs the Go server |
 |[start_app_dev.sh](./scripts/start_app_dev.sh)| Starts both the client and server for local development |
 |[start_app_prod.sh](./scripts/start_app_prod.sh)| Builds the Next.js static export and starts the server for production |
+|[build_app.sh](./scripts/build.sh)| Builds app for production |
 
-> Note: You may need to update script permissions to make executable: `chmod +x start_client.sh start_server.sh start_app_dev.sh start_app_prod.sh`
-
-### Alias for ease of running in any working directory
-- Add this line to your ~/.zshrc (or ~/.bashrc)
-  - `alias lan_remote='./path/to/lan_mac_remote/scripts/start_app_dev.sh';`
-- Next & Go server will spin up with a single command `lan_remote`
-- Scan the qr code to be redirected to IP address of remote
-
-## Hammerspoon
-Keypresses are triggered through Applescript, an apple scripting language that allows for control over some OS functions. For example, `brightness up` corresponds to a key code of `144`.
-
-```bash
-#!/bin/bash
-osascript -e "tell application \"System Events\" to key code 144"
-```
-
-|Function key|Media key|
--|-
-|F7|previous|
-|F8|play/pause|
-|F9|next|
-
-These media controls are unique because they don’t use traditional key codes. For example, sending the key code for F8 (144) through AppleScript won’t trigger the play/pause action — it only simulates pressing the F8 key. This is because macOS handles media keys as system-level events, separate from standard key presses. 
-
-Hammerspoon overcomes this limitation by directly sending system-level Play/Pause, Next, and Previous commands through key bindings.
+> Note: You may need to update script permissions to make executable: `chmod +x scripts/`

@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 export const port = "5001";
 
 // ValidEndpoint contains valid endopints configured in server/api.go
-type ValidEndpoint = "keystroke" | "volume" | "sleep" | "verify_hammerspoon";
+type ValidEndpoint = "keystroke" | "media_keystroke" | "volume" | "sleep"
 
 // HttpMethod contains valid http method(s) for request
 type HttpMethod = "GET";
@@ -67,26 +67,7 @@ export const apiRequest = async <T>(
   }
 };
 
-// verifyHammerspoon checks to see if hammerspoon is running
-export const verifyHammerspoon = async () => {
-  try {
-    const data = await apiRequest<DefaultResponse>({
-      method: "GET",
-      endpoint: "verify_hammerspoon",
-    });
-    if (!data) {
-      console.warn("No data returned from api");
-      return;
-    }
-    if (data.status == "not_running") {
-      toast("Hammerspoon not detected, media functionality will be limited");
-    }
-  } catch (error) {
-    console.warn(`hammerspoon verification error: ${error}`);
-  }
-};
-
-// triggerKeyPress sends the keypress action to the /key endpoint in server/api.go
+// triggerKeyPress sends the keypress action to the /keystroke endpoint in server/api.go
 export const triggerKeyPress = async (key_action: string) => {
   try {
     await apiRequest<DefaultResponse>({
@@ -100,6 +81,21 @@ export const triggerKeyPress = async (key_action: string) => {
     console.warn(`triggerKeyPress error: ${error}`);
   }
 };
+
+// triggerMediaKeyPress sends the media keypress action to the /media_keystroke endpoint in server/api.go
+export const triggerMediaKeyPress = async (key_action: string) => {
+  try {
+    await apiRequest<DefaultResponse>({
+      method: "GET",
+      endpoint: "media_keystroke",
+      queryParams: {
+        action: key_action,
+      },
+    });
+  } catch (error) {
+    console.warn(`triggerMediaKeyPress error: ${error}`);
+  }
+}
 
 // adjustVolume triggers key press and set's the volume state to value received from server
 export const adjustVolume = async (

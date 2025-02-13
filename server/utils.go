@@ -1,23 +1,43 @@
 package main
 
 import (
+	"fmt"
 	"net"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/skip2/go-qrcode"
 )
 
-const nextExportDir = "/client/out"
+var (
+	ServerURL      = ""
+	LanAddress     = ""
+	NextExportPath = ""
+	exePath        = ""
+)
 
-// GetOutDir retrieves absolute path of the "out" directory based on where the binary is located
-func GetOutDir() string {
-	exePath, err := os.Executable()
+// initialize variables
+func init() {
+	LanAddress = fmt.Sprintf("%s:%s", GetOutboundIP(), port)
+	ServerURL = fmt.Sprintf("http://%s", LanAddress)
+
+	// nextjs build file path: dev vs. application build
+	var err error
+	exePath, err = os.Executable()
 	if err != nil {
 		log.Fatal("error getting executable path: ", err)
 	}
-	return filepath.Join(filepath.Dir(exePath), nextExportDir)
+
+	baseDir := filepath.Dir(exePath)
+
+	appPath := filepath.Join(baseDir, "../Resources")
+	if _, err := os.Stat(appPath); err == nil {
+		NextExportPath = filepath.Join(appPath, "client/out")
+		return
+	}
+
+	NextExportPath = filepath.Join(baseDir, "client/out")
 }
 
 // GetOutboundIP is helper for retriveing local ip address of current device
@@ -31,16 +51,37 @@ func GetOutboundIP() net.IP {
 	return localAddr.IP
 }
 
-// GenerateQRCode generates a qr code for ip address terminal output
-func GenerateQRCode(text string) string {
-	if len(os.Args) > 1 && os.Args[1] == "dev" {
-		return ""
+// StartElectron launches the Electron UI
+//
+// prod: run the packaged electron app
+// dev: run electron via npm start
+func StartElectron(serverURL string) {
+	appDir := filepath.Dir(filepath.Dir(exePath))
+	electronPath := filepath.Join(appDir, "Resources", "electron_binary.app", "Contents", "MacOS", "electron_binary")
+
+	var cmd *exec.Cmd
+	if _, err := os.Stat(electronPath); err == nil {
+		cmd = exec.Command(electronPath)
+	} else {
+		cmd = exec.Command("npm", "start")
+		cmd.Dir = "./electron"
 	}
-	qr, err := qrcode.New(text, qrcode.Low)
-	if err != nil {
-		log.Errorf("unable to generate qr code: %+v", err)
-		return ""
+
+	// pass server url to electron ui
+	cmd.Env = append(os.Environ(), fmt.Sprintf("SERVER_URL=%s", serverURL))
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Start(); err != nil {
+		log.Fatalf("Failed to start Electron: %v", err)
 	}
-	qr.DisableBorder = true
-	return qr.ToSmallString(true)
+
+	go func() {
+		err := cmd.Wait()
+		if err != nil {
+			log.Printf("Electron exited with error: %v", err)
+		}
+		log.Println("Electron has exited. Stopping Go server...")
+		os.Exit(0)
+	}()
 }
