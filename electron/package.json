@@ -4,8 +4,8 @@
   "description": "mac remote",
   "main": "app/main.js",
   "scripts": {
-    "start": "electron .",
-    "package": "npx electron-packager . 'electron_binary' --platform=darwin --arch=arm64 --out=dist --overwrite",
+    "start": "NODE_ENV=dev electron .",
+    "package": "NODE_ENV=prod npx electron-packager . 'Mac Remote' --platform=darwin --arch=arm64 --out=dist --overwrite --app-bundle-id=com.alexleventis.macremote --icon=../assets/app.icns",
     "make": "npm run package"
   },
   "keywords": [],

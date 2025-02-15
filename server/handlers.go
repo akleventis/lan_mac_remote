@@ -143,6 +143,7 @@ func VerifyHammerspoon() http.HandlerFunc {
 	}
 }
 
+// GetQRCode generates and returns a base64 encoded qr code
 func GetQRCode() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		qrCode, err := qrcode.New(ServerURL, qrcode.Medium)

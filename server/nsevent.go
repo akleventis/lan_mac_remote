@@ -1,9 +1,9 @@
 package main
 
-// Objective-C code ripped off of https://github.com/Hammerspoon/hammerspoon (open-source) with ai help to create a system-level events using NSEvent
+// C code ripped off of https://github.com/Hammerspoon/hammerspoon (open-source) to create a system-level events using NSEvent
 
 /*
-#cgo CFLAGS: -x objective-c
+#cgo CFLAGS: -x objective-c -Wno-deprecated-declarations
 #cgo LDFLAGS: -framework CoreGraphics -framework IOKit -framework Cocoa
 #include <stdint.h>
 typedef int32_t my_int32_t;
