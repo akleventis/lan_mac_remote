@@ -1,12 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	log "github.com/sirupsen/logrus"
 )
 
 const port = "5001"
@@ -29,12 +28,7 @@ func main() {
 	fileServer := http.FileServer(http.Dir(NextExportPath))
 	s.router.PathPrefix("/").Handler(http.StripPrefix("/", fileServer))
 
-	// omit electron via dev
-	if len(os.Args) <= 1 || os.Args[1] == "prod" {
-		go StartElectron(ServerURL)
-	}
-
+	fmt.Printf("Server running on: %s", LanAddress)
 	handler := cors.Default().Handler(s.router)
-	log.Infof("server running on: %s", LanAddress)
 	http.ListenAndServe(LanAddress, handler)
 }

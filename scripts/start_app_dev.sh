@@ -17,16 +17,15 @@ if [ -z "$LOCAL_IP" ]; then
   exit 1
 fi
 
-# spin up go server 
-echo "Building Go server..."
-go build -o ../go_binary ../server/api.go ../server/handlers.go ../server/utils.go ../server/nsevent.go
-
-cd ..
-./go_binary dev &
+# spin up go server
+echo "Starting Go server..."
+cd ../server
+go run api.go handlers.go utils.go nsevent.go &
 GO_PID=$!
 
 # spin up dev server on all network interfaces -> enables accessibility from any device on the local network.
 echo "Spinning up Next.js development server..."
+cd ..
 SERVER_IP=$LOCAL_IP npm --prefix ./client run dev -- -H 0.0.0.0 &
 EXPO_PID=$!
 

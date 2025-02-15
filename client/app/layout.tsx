@@ -8,7 +8,8 @@ export const metadata = {
 export default function RootLayout() {
   return (
     <html lang='en'>
-      <body style={{margin: 0}}>
+      <link rel="apple-touch-icon" sizes="180x180" href="/icon.png" />
+      <body style={{ margin: 0 }}>
         <HomeScreen />
       </body>
     </html>
