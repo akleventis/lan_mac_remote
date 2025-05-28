@@ -49,15 +49,9 @@ const styles = {
     border: 'none',
   },
   column: {
-    flexDirection: 'column' as 'column',
-    justifyContent: 'center' as 'center',
     borderStyle: 'solid',
-    borderWidth: 3,
     borderRadius: 50,
     borderColor: '#FFFFFF',
     maxWidth: 70,
-  },
-  row: {
-    flexDirection: 'row' as 'row',
   },
 };

@@ -127,23 +127,7 @@ func HandleSleep() http.HandlerFunc {
 	}
 }
 
-// VerifyHammerspoon checks if Hammerspoon is running on current system
-func VerifyHammerspoon() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		isRunning, err := verifyHammerspoon()
-		if err != nil {
-			apiResponse(w, 500, &Response{Status: err.Error()})
-			return
-		}
-		if isRunning {
-			apiResponse(w, 200, &Response{Status: "running"})
-			return
-		}
-		apiResponse(w, 200, &Response{Status: "not_running"})
-	}
-}
-
-// GetQRCode generates and returns a base64 encoded qr code
+// GetQRCode generates and returns a base64 encoded server qr code
 func GetQRCode() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		qrCode, err := qrcode.New(ServerURL, qrcode.Medium)
@@ -210,25 +194,4 @@ func adjustVolume(command string) (string, error) {
 		return "", err
 	}
 	return strconv.Itoa(newVolume), nil
-}
-
-// verifyHammerspoon is a helper for checking if Hammerspoon application is running on system
-func verifyHammerspoon() (bool, error) {
-	script := `
-    tell application "System Events"
-        (name of processes) contains "Hammerspoon"
-    end tell
-    `
-	cmd := exec.Command("osascript", "-e", script)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err != nil {
-		return false, err
-	}
-
-	output := strings.TrimSpace(out.String())
-	if strings.Contains(strings.ToLower(output), "true") {
-		return true, nil
-	}
-	return false, nil
 }

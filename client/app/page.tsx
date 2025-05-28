@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { ToastContainer } from "react-toastify";
 import { Poppins } from 'next/font/google';
-import { triggerKeyPress, triggerMediaKeyPress, adjustVolume, triggerSleep } from './api';
+import { triggerKeyPress, triggerMediaKeyPress, adjustVolume, triggerSleep, externalMediaSource } from './api';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
 import { CircularProgressBar } from './components/CircularProgressBar';
 import { ColorPickerModal } from './components/ColorPickerModal';
+import { InfoModal } from './components/InfoModal';
 
 const poppins = Poppins({
   weight: ['400', '700'],
@@ -18,15 +19,12 @@ const poppins = Poppins({
 export default function HomeScreen() {
   const [volume, setVolume] = useState('');
   const [color, setColor] = useLocalStorage('backgroundColor', '#434343');
-  const [isOpen, setIsOpen] = useState(false);
+  const [isColorsOpen, setIsColorsOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   useEffect(() => {
-    adjustVolume('current', volume, setVolume); // fetch current volume from server
+    adjustVolume('current', volume, setVolume); 
   }, []);
-
-  const openModal = () => {
-    setIsOpen(true);
-  };
 
   return (
     <div
@@ -125,32 +123,39 @@ export default function HomeScreen() {
           </button>
         </div>
 
-        <div style={styles.buttonRow}>
+        <div style={{
+          ...styles.buttonRow,
+          display: volume !== externalMediaSource ? 'flex' : undefined
+        }}>
+
           <BrightnessControls />
 
-          <div style={styles.column}>
-            <CircularProgressBar volume={volume} />
-          </div>
+          <CircularProgressBar volume={volume} />
 
-          <VolumeControls setVolume={setVolume} volume={volume}/>
+          {volume !== externalMediaSource && <VolumeControls setVolume={setVolume} volume={volume} />}
         </div>
 
-        <div style={styles.colorModalButton}>
-          <button style={styles.item} onClick={openModal}>
-            <img
-              width='25'
-              height='25'
-              alt='colorpicker'
-              src={`/images/color-picker.png`}
-            />
-          </button>
-        </div>
+        <button style={styles.item} onClick={() => { setIsColorsOpen(true) }}>
+          <img
+            width='25'
+            height='25'
+            alt='colorpicker'
+            src={`/images/color-picker.png`}
+          />
+        </button>
 
         <ColorPickerModal
           color={color}
           setColor={setColor}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          isColorsOpen={isColorsOpen}
+          setIsColorsOpen={setIsColorsOpen}
+        />
+
+        <button style={styles.info_button} onClick={() => { setIsInfoOpen(true) }}>?</button>
+
+        <InfoModal
+          isInfoOpen={isInfoOpen}
+          setIsInfoOpen={setIsInfoOpen}
         />
       </div>
     </div>
@@ -164,52 +169,34 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     height: '100vh',
-    color: 'white',
   },
   item: {
     width: 60,
     height: 60,
-    color: 'red',
     margin: 10,
     padding: 7,
     borderWidth: 3,
     borderRadius: 50,
-    borderColor: '#FFFFFF',
     borderStyle: 'solid',
     background: 'none',
   },
-  column: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column' as 'column',
-    justifyContent: 'center',
+  info_button: {
+    color: 'white',
+    marginTop: '10px',
+    width: 40,
+    height: 40,
+    borderRadius: 100,
+    border: '1px solid #FFFFFF',
+    background: 'none',
   },
   row: {
     marginTop: 20,
-    display: 'flex',
-    flexDirection: 'row' as 'row',
   },
   buttonRow: {
-    display: 'flex',
-    flexDirection: 'row' as 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 20,
     marginLeft: 80,
     marginRight: 80,
     gap: 25,
-  },
-  closeButton: {
-    display: 'flex',
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  colorModalButton: {
-    margin: 20,
-  },
-  volumeRow: {
-    flexDirection: 'row' as 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 };
