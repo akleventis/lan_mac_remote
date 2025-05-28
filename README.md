@@ -34,16 +34,26 @@ This application runs a Go server on your Mac that exposes an API for triggering
 3. Launch app from Applications folder
 5. Eject DMG file
 
-You may encounter the following error: 
-> "Mac Remote" can't be opened because Apple cannot check it for malicious software.
+### macOS Gatekeeper Warnings
 
-This appears because the app isn't signed with an Apple Developer certificate ($99/year - no thanks). To bypass:
-1. Open new finder window
-2. Nav to your Applications folder
-3. Right click and select "Open" from the context menu
-4. Click "Open" in the security dialog that appears
+You may encounter one or both of the following errors when launching the app for the first time. This happens because the app isn't signed with an Apple Developer certificate ($99/year — no thanks).
+
+1. `“Mac Remote” is damaged and can’t be opened. You should eject the disk image.`
+
+Fix: Remove the quarantine attribute via
+```bash
+xattr -d com.apple.quarantine "/path/to/Mac Remote.app"
+```
+
+2. `"Mac Remote" can't be opened because Apple cannot check it for malicious software.`
+
+Fix: Right-click the application in your Applications folder, select **Open** from the context menu, then click **Open** again in the security prompt that appears.
+
+### Accessibility
+If the app doesn't prompt for Accessibility and Automation permissions on first launch, press a few buttons in the UI to manually trigger the macOS privacy permission dialogs
 
 ## Developer Overview
+
 ### Components
 
 [client](./client/): Static Next.js build served through go server. Runs on a device connected to the same network and acts as the user interface for sending commands
