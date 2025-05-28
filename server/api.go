@@ -21,7 +21,6 @@ func main() {
 	s.router.HandleFunc("/media_keystroke", HandleMediaKeyStroke()).Methods("GET")
 	s.router.HandleFunc("/volume", HandleVolume()).Methods("GET")
 	s.router.HandleFunc("/sleep", HandleSleep()).Methods("GET")
-	s.router.HandleFunc("/verify_hammerspoon", VerifyHammerspoon()).Methods("GET")
 	s.router.HandleFunc("/get_qr", GetQRCode()).Methods("GET")
 
 	// file server for static nextjs build

@@ -8,6 +8,7 @@ type ValidEndpoint = "keystroke" | "media_keystroke" | "volume" | "sleep"
 // HttpMethod contains valid http method(s) for request
 type HttpMethod = "GET";
 
+// externalMediaSource indicates sound output through external device (hdmi)
 export const externalMediaSource = "external_media_source";
 
 // DefaultResponse is the expected structure of a default api response
@@ -104,6 +105,7 @@ export const adjustVolume = async (
   setVolume: React.Dispatch<React.SetStateAction<string>>
 ) => {
   if (volume == externalMediaSource) {
+    setVolume(externalMediaSource)
     toast("external media source detected, volume unavailable");
     return;
   }
@@ -121,8 +123,8 @@ export const adjustVolume = async (
       return;
     }
     if (data.volume == externalMediaSource) {
-      toast("external media source detected, volume unavailable");
       setVolume(externalMediaSource);
+      toast("external media source detected, volume unavailable");
     } else {
       setVolume(data.volume);
     }

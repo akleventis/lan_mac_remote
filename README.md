@@ -1,10 +1,50 @@
-# Local Area Network Remote for Macs <img width=40 src="assets/icon.png" style="vertical-align: text-bottom;" />
-Application that allows your phone to trigger keypresses/OS events on a Mac over HTTP using TCP/IP
+# MacOS Local Area Network Remote <img width=35 src="assets/icon.png" style="vertical-align: text-bottom;" />
+Enables your phone to trigger keypresses/OS events on a Mac over HTTP using TCP/IP
 
-[Download Mac Remote v1.0.0](https://github.com/akleventis/lan_mac_remote/releases/tag/v1.0.0)
+[Download Mac Remote (latest release)](https://github.com/akleventis/lan_mac_remote/releases/latest)
 
 ## Overview
+This application runs a Go server on your Mac that exposes an API for triggering keypresses and system events. It also serves a locally hosted Next.js static build, accessible from any device on the same local network.
+
+<img align='right' width=170 src="assets/qr.png" />
+
+### Available OS Actions
+- Play / Pause
+- Previous / Next Track
+- Sleep
+- Arrow Key Left / Right
+- Brightness Up / Down
+- Volume Up / Down
+- Spacebar
+
 <img align='right' width=170 src="assets/screen.png" />
+
+### UI Features
+- Background color picker modal (saves preference locally)
+- Info page displaying icon-to-action mappings
+
+
+### System Requirements
+- Apple Silicon (arm64, M1 or newer)
+- macOS 11 Big Sur or later
+
+### Installation
+1. Download the DMG file
+2. Drag Mac Remote to your Applications folder
+3. Launch app from Applications folder
+5. Eject DMG file
+
+You may encounter the following error: 
+> "Mac Remote" can't be opened because Apple cannot check it for malicious software.
+
+This appears because the app isn't signed with an Apple Developer certificate ($99/year - no thanks). To bypass:
+1. Open new finder window
+2. Nav to your Applications folder
+3. Right click and select "Open" from the context menu
+4. Click "Open" in the security dialog that appears
+
+## Developer Overview
+### Components
 
 [client](./client/): Static Next.js build served through go server. Runs on a device connected to the same network and acts as the user interface for sending commands
 
@@ -12,16 +52,8 @@ Application that allows your phone to trigger keypresses/OS events on a Mac over
 
 [electron](./electron/): Desktop application UI with a menu tray interface. Opens a window to display the QR code and server IP address
 
-### Available OS Actions
-- play / pause
-- prev / next track
-- sleep
-- arrow key left / right
-- brightness up / down
-- volume up / down
-- spacebar
 
-## Developer Setup
+### Setup
 1. Ensure [go 1.23](https://go.dev/doc/install) is installed on system 
 1. Install qrencode for QR code generation of the IP address landing page via mobile device
     - `brew install qrencode`
@@ -46,3 +78,6 @@ Application that allows your phone to trigger keypresses/OS events on a Mac over
 ### Electron
 Electron is the desktop application that launches the go_binary executable and opens the user interface
 - `cd electron && npm start`
+
+## Support
+- For support, please [open an issue](https://github.com/akleventis/lan_mac_remote/issues) 
