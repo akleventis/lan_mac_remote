@@ -3,6 +3,8 @@ Enables your phone to trigger keypresses/OS events on a Mac over HTTP using TCP/
 
 [Download Mac Remote (latest release)](https://github.com/akleventis/lan_mac_remote/releases/latest)
 
+Big shoutout to Tanner Roof [@rooftb](https://github.com/rooftb) for helping out with the client-side UX
+
 ## Overview
 This application runs a Go server on your Mac that exposes an API for triggering keypresses and system events. It also serves a locally hosted Next.js static build, accessible from any device on the same local network.
 
