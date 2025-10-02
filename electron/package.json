@@ -5,7 +5,7 @@
   "main": "app/main.js",
   "scripts": {
     "start": "NODE_ENV=dev electron .",
-    "package": "NODE_ENV=prod npx electron-packager . 'Mac Remote' --platform=darwin --arch=arm64 --out=dist --overwrite --app-bundle-id=com.alexleventis.macremote --icon=../assets/app.icns",
+    "package": "NODE_ENV=prod npx electron-packager . 'Mac Remote' --platform=darwin --arch=arm64 --out=dist --overwrite --app-bundle-id=com.alexleventis.macremote --icon=../assets/app.icns --extra-resource=../go_binary",
     "make": "npm run package"
   },
   "keywords": [],
