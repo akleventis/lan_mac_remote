@@ -47,12 +47,16 @@ Fix: Remove the quarantine attribute via
 xattr -d com.apple.quarantine "/path/to/Mac Remote.app"
 ```
 
-2. `"Mac Remote" can't be opened because Apple cannot check it for malicious software.`
-
-Fix: Right-click the application in your Applications folder, select **Open** from the context menu, then click **Open** again in the security prompt that appears.
-
 ### Accessibility
-If the app doesn't prompt for Accessibility and Automation permissions on first launch, press a few buttons in the UI to manually trigger the macOS privacy permission dialogs
+You will need to update two settings in macOS to grant permission:
+
+1. **System Events** – corresponds to play/prev/next track  
+   > **System Settings → Privacy & Security → Automation**  
+   Locate **Mac Remote** and toggle **System Events** on.
+
+2. **Basic Accessibility** – corresponds to keystrokes  
+   > **System Settings → Privacy & Security → Accessibility**  
+   Locate **Mac Remote** and toggle it on.
 
 ## Developer Overview
 

@@ -26,6 +26,17 @@ if [ ! -d "$APP_PATH" ]; then
   exit 1
 fi
 
+# ensure Next.js static export is bundled where server expects it
+CLIENT_OUT="$REPO/client/out"
+RESOURCES_CLIENT_DIR="$APP_PATH/Contents/Resources/client"
+if [ ! -d "$CLIENT_OUT" ]; then
+  echo "Error: Next.js export not found at $CLIENT_OUT. Run build_client.sh or build_app.sh first."
+  exit 1
+fi
+mkdir -p "$RESOURCES_CLIENT_DIR"
+rm -rf "$RESOURCES_CLIENT_DIR/out"
+cp -R "$CLIENT_OUT" "$RESOURCES_CLIENT_DIR/out"
+
 # stage DMG content
 rm -rf "$DMG_STAGING"
 mkdir -p "$DMG_STAGING"
