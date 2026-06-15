@@ -79,7 +79,7 @@ export const InfoModal = ({
                                 width='30'
                                 height='30'
                                 alt='mute'
-                                src={`/images/volume-icon.png`}
+                                src={`/images/volume-mute.png`}
                                 style={styles.image}
                             />
                             <span>mute toggle</span>

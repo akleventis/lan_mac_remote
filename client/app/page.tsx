@@ -146,7 +146,7 @@ export default function HomeScreen() {
                   width='18'
                   height='18'
                   alt={muted ? 'unmute' : 'mute'}
-                  src='/images/volume-down.png'
+                  src='/images/volume-mute.png'
                 />
               </button>
             )}
