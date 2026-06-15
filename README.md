@@ -8,6 +8,9 @@ Big shoutout to Tanner Roof [@rooftb](https://github.com/rooftb) for helping out
 ## Overview
 This application runs a Go server on your Mac that exposes an API for triggering keypresses and system events. It also serves a locally hosted Next.js static build, accessible from any device on the same local network.
 
+### Limitations
+- **Private networks only** — both devices must be on the same private network (home or office WiFi). Public networks (hotels, airports, cafes) typically enforce client isolation, which blocks device-to-device communication even when connected to the same network.
+
 <img align='right' width=170 src="assets/qr.png" />
 
 ### Available OS Actions

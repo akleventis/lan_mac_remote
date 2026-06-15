@@ -8,7 +8,7 @@ import (
 	"github.com/rs/cors"
 )
 
-const port = "5001"
+const port = 5001
 
 type Server struct {
 	router *mux.Router

@@ -39,6 +39,17 @@
             padding: 0.5rem;
             border-radius: 4px;
         }
+
+        #publicWarning {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.6rem 0.8rem;
+            background: #4a2a00;
+            border: 1px solid #f90;
+            border-radius: 6px;
+            color: #f90;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -46,13 +57,20 @@
         <h3>Scan QR Code to Connect</h3>
         <img id="qrCode" alt="QR Code">
         <div id="serverURL"></div>
+        <div id="publicWarning">
+            Public network detected — device connection may be blocked.
+        </div>
     </div>
 
     <script>
         async function loadQRCode() {
             try {
                 const serverURL = await window.electron.getServerURL();
+                const isPublicNetwork = await window.electron.getIsPublicNetwork();
                 document.getElementById("serverURL").innerText = serverURL;
+                if (isPublicNetwork) {
+                    document.getElementById("publicWarning").style.display = "block";
+                }
                 const response = await fetch(`${serverURL}/get_qr`);
                 if (!response.ok) {
                     if (response.status === 500) throw new Error("Error: Could not retrieve QR code");

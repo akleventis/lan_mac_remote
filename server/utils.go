@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	LanAddress = fmt.Sprintf("%s:%s", getLANIP(), port)
+	LanAddress = fmt.Sprintf("%s:%d", getLANIP(), port)
 	ServerURL = fmt.Sprintf("http://%s", LanAddress)
 
 	// nextjs build file path

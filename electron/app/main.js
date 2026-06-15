@@ -7,6 +7,7 @@ const {
   ipcMain,
 } = require("electron");
 const { spawn } = require("child_process");
+const os = require("os");
 const path = require("path");
 
 const env = process.env.NODE_ENV;
@@ -14,6 +15,20 @@ let serverURL;
 let mainWindow;
 let tray;
 let goServer;
+let isPublicNetwork = false;
+
+// subnet prefix < 24 suggests a large shared network (hotel, airport, public hotspot)
+function checkPublicNetwork(ip) {
+  const ifaces = os.networkInterfaces();
+  for (const iface of Object.values(ifaces)) {
+    for (const addr of iface) {
+      if (addr.family === "IPv4" && addr.address === ip) {
+        return addr.cidr ? parseInt(addr.cidr.split("/")[1]) < 24 : false;
+      }
+    }
+  }
+  return false;
+}
                                        
 // helper to get go_binary path based on environment
 function getGoBinaryPath() {
@@ -41,7 +56,10 @@ async function startGoServer() {
       const output = data.toString().trim();
       if (output.includes("Server running on: ")) {
         clearTimeout(timeoutId);
-        serverURL = "http://" + output.split("Server running on: ")[1].trim();
+        const lanAddress = output.split("Server running on: ")[1].trim();
+        serverURL = "http://" + lanAddress;
+        const ip = lanAddress.split(":")[0];
+        isPublicNetwork = checkPublicNetwork(ip);
         resolve(serverURL);
       }
     });
@@ -178,5 +196,5 @@ app.on("before-quit", () => {
   }
 });
 
-// Send the server URL to the renderer process
 ipcMain.handle("get-server-url", () => serverURL);
+ipcMain.handle("get-is-public-network", () => isPublicNetwork);
