@@ -3,32 +3,19 @@ package main
 import (
 	"fmt"
 	"net"
-	"os"
 	"os/exec"
-	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 )
 
 var (
-	ServerURL      = ""
-	LanAddress     = ""
-	NextExportPath = ""
-	exePath        = ""
+	ServerURL  = ""
+	LanAddress = ""
 )
 
 func init() {
 	LanAddress = fmt.Sprintf("%s:%d", getLANIP(), port)
 	ServerURL = fmt.Sprintf("http://%s", LanAddress)
-
-	// nextjs build file path
-	var err error
-	exePath, err = os.Executable()
-	if err != nil {
-		log.Fatal("Error getting executable path: ", err)
-	}
-	NextExportPath = filepath.Join(filepath.Dir(exePath), "client/out")
-
 	_ = requestPrivacyPermissions()
 }
 

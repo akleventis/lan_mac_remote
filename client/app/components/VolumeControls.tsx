@@ -34,7 +34,7 @@ export const VolumeControls = ({
           width='25'
           height='25'
           alt='volume down'
-          src={`/images/volume-down.png`}
+          src={`/images/volume-icon.png`}
         />
       </button>
     </div>

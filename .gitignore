@@ -1,6 +1,13 @@
 .DS_Store
 *.swp
 go_binary
+server/static/
 notes.txt
 Mac Remote.dmg
 Mac Remote.app
+electrobun/build/
+electrobun/artifacts/
+electrobun/node_modules/
+electrobun/bun.lock
+assets/app.iconset/
+icon-composer.icon

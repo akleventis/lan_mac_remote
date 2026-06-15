@@ -1,49 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
-# repo root
 REPO="$(cd "$(dirname "$0")/.."; pwd)"
-
 APP_NAME="Mac Remote"
-ELECTRON_DIR="$REPO/electron"
-DIST_DIR="$ELECTRON_DIR/dist"
-APP_DIR="$DIST_DIR/$APP_NAME-darwin-arm64"
-APP_PATH="$APP_DIR/$APP_NAME.app"
-DMG_STAGING="$DIST_DIR/dmg"
-DMG_PATH="$REPO/$APP_NAME.dmg"
+ELECTROBUN_DIR="$REPO/electrobun"
 
-# build frontend + go binary
+# build Next.js, embed into go_binary, compile go_binary
 "$REPO/scripts/build_app.sh"
 
-# package electron app (includes go_binary in Resources)
-cd "$ELECTRON_DIR"
-npm install
-npm run package
+# package electrobun app (go_binary has client baked in, no post-processing needed)
+cd "$ELECTROBUN_DIR"
+bun install
+bun run build
 
-# verify .app exists
-if [ ! -d "$APP_PATH" ]; then
-  echo "Error: $APP_PATH not found."
+# find the built .app bundle (skip dev builds)
+APP_PATH=$(find "$ELECTROBUN_DIR/build" -name "*.app" -maxdepth 3 | grep "stable-" | head -1)
+if [ -z "$APP_PATH" ] || [ ! -d "$APP_PATH" ]; then
+  echo "Error: release .app bundle not found in $ELECTROBUN_DIR/build"
   exit 1
 fi
+echo "Found app bundle: $APP_PATH"
 
-# ensure Next.js static export is bundled where server expects it
-CLIENT_OUT="$REPO/client/out"
-RESOURCES_CLIENT_DIR="$APP_PATH/Contents/Resources/client"
-if [ ! -d "$CLIENT_OUT" ]; then
-  echo "Error: Next.js export not found at $CLIENT_OUT. Run build_client.sh or build_app.sh first."
-  exit 1
-fi
-mkdir -p "$RESOURCES_CLIENT_DIR"
-rm -rf "$RESOURCES_CLIENT_DIR/out"
-cp -R "$CLIENT_OUT" "$RESOURCES_CLIENT_DIR/out"
-
-# stage DMG content
+# stage and create DMG
+DMG_STAGING="$ELECTROBUN_DIR/build/dmg"
+DMG_PATH="$REPO/$APP_NAME.dmg"
 rm -rf "$DMG_STAGING"
 mkdir -p "$DMG_STAGING"
 cp -R "$APP_PATH" "$DMG_STAGING/"
 ln -s /Applications "$DMG_STAGING/Applications"
 
-# create compressed DMG
 hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_STAGING" -ov -format UDZO "$DMG_PATH"
 
 echo "DMG created at: $DMG_PATH"

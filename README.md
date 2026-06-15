@@ -69,11 +69,12 @@ You will need to update two settings in macOS to grant permission:
 
 [server](./server/api.go): Go server running on mac that handles triggering OS operations based on incoming http requests. Includes fileserver for Next.js static build
 
-[electron](./electron/): Desktop application UI with a menu tray interface. Opens a window to display the QR code and server IP address
+[electrobun](./electrobun/): Desktop application UI. Opens a window to display the QR code and server IP address
 
 
 ### Setup
-1. Ensure [go 1.23](https://go.dev/doc/install) is installed on system 
+1. Ensure [go 1.23](https://go.dev/doc/install) is installed on system
+1. Ensure [Bun](https://bun.sh) is installed
 1. Install qrencode for QR code generation of the IP address landing page via mobile device
     - `brew install qrencode`
 1. Clone repository 
@@ -91,12 +92,13 @@ You will need to update two settings in macOS to grant permission:
 |[build_client.sh](./scripts/build_client.sh)| Builds the Next.js static export |
 |[build_server.sh](./scripts/build_server.sh)| Compiles Go binary |
 |[build_app.sh](./scripts/build_app.sh)| Compiles the Next.js static export and Go binary without running them |
+|[build_dmg.sh](./scripts/build_dmg.sh)| Builds the full app bundle and packages it as a DMG |
 
 > Note: You may need to update permissions to make executable: `chmod +x scripts/*`
 
-### Electron
-Electron is the desktop application that launches the go_binary executable and opens the user interface
-- `cd electron && npm start`
+### Electrobun
+Electrobun is the desktop application that launches the go_binary executable and opens the user interface
+- `cd electrobun && bun start`
 
 ## Support
 - For support, please [open an issue](https://github.com/akleventis/lan_mac_remote/issues) 

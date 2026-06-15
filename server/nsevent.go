@@ -1,46 +1,32 @@
 package main
 
-// C code ripped off of https://github.com/Hammerspoon/hammerspoon (open-source) to create a system-level events using NSEvent
+// Uses MediaRemote private framework (same channel as physical media keys) via dlopen.
+// NSSystemDefined/CGEventPost stopped working on macOS 14+ for apps using MPRemoteCommandCenter.
 
 /*
-#cgo CFLAGS: -x objective-c -Wno-deprecated-declarations
-#cgo LDFLAGS: -framework CoreGraphics -framework IOKit -framework Cocoa
-#include <stdint.h>
-typedef int32_t my_int32_t;
-typedef unsigned char my_bool;
+#cgo LDFLAGS: -framework Foundation
+#include <dlfcn.h>
+#include <objc/objc.h>
 
-#import <Cocoa/Cocoa.h>
-#import <IOKit/hidsystem/ev_keymap.h>
-
-void postMediaKey(my_int32_t keyCode, my_bool keyDown) {
-    @autoreleasepool {
-        NSEvent* event = [NSEvent otherEventWithType:NSSystemDefined
-                                          location:NSMakePoint(0, 0)
-                                     modifierFlags:0xA00
-                                         timestamp:0
-                                      windowNumber:0
-                                           context:nil
-                                           subtype:8
-                                             data1:(keyCode << 16) | ((keyDown ? 0xA : 0xB) << 8)
-                                             data2:-1];
-
-        CGEventPost(kCGSessionEventTap, [event CGEvent]);
+void sendMediaRemoteCommand(int command) {
+    void* handle = dlopen("/System/Library/PrivateFrameworks/MediaRemote.framework/MediaRemote", RTLD_NOW | RTLD_LOCAL);
+    if (!handle) return;
+    typedef void (*MRMediaRemoteSendCommandFunc)(int cmd, id userInfo);
+    MRMediaRemoteSendCommandFunc sendCmd = (MRMediaRemoteSendCommandFunc)dlsym(handle, "MRMediaRemoteSendCommand");
+    if (sendCmd) {
+        sendCmd(command, (id)0);
     }
+    dlclose(handle);
 }
 */
 import "C"
-import (
-	"time"
-)
 
 var MediaKeyMapping = map[string]int32{
-	"play_pause":     int32(16),
-	"next_track":     int32(17),
-	"previous_track": int32(18),
+	"play_pause":     int32(2), // MRMediaRemoteCommandTogglePlayPause
+	"next_track":     int32(4), // MRMediaRemoteCommandNextTrack
+	"previous_track": int32(5), // MRMediaRemoteCommandPreviousTrack
 }
 
 func sendMediaKey(keyCode int32) {
-	C.postMediaKey(C.my_int32_t(keyCode), C.my_bool(1))
-	time.Sleep(50 * time.Millisecond)
-	C.postMediaKey(C.my_int32_t(keyCode), C.my_bool(0))
+	C.sendMediaRemoteCommand(C.int(keyCode))
 }

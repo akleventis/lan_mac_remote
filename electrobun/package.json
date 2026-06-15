@@ -1,0 +1,14 @@
+{
+  "name": "lan-mac-remote",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "electrobun dev",
+    "dev": "electrobun dev --watch",
+    "build": "electrobun build --env=stable"
+  },
+  "dependencies": {
+    "electrobun": "latest"
+  }
+}

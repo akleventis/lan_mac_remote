@@ -13,7 +13,12 @@ npm run build
 
 cd ../scripts
 
-# build go_binary executable
+# embed Next.js export into Go server
+echo "Embedding Next.js export into Go server..."
+rm -rf ../server/static
+cp -R ../client/out ../server/static
+
+# build go_binary executable (static/ is now embedded)
 echo "Building Go server..."
 go build -o ../go_binary ../server/api.go ../server/handlers.go ../server/utils.go ../server/nsevent.go
 
