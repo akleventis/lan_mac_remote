@@ -27,14 +27,8 @@ export const InfoModal = ({
                             <span>sleep</span>
                         </li>
                         <li style={styles.li}>
-                            <img
-                                width='30'
-                                height='30'
-                                alt='previous track'
-                                src={`/images/track-prev.png`}
-                                style={styles.image}
-                            />
-                            <span>previous track</span>
+                            <img width='30' height='30' alt='previous / next track' src={`/images/track-prev.png`} style={styles.image} />
+                            <span>previous / next track</span>
                         </li>
                         <li style={styles.li}>
                             <img
@@ -45,16 +39,6 @@ export const InfoModal = ({
                                 style={styles.image}
                             />
                             <span>play/pause</span>
-                        </li>
-                        <li style={styles.li}>
-                            <img
-                                width='30'
-                                height='30'
-                                alt='next track'
-                                src={`/images/track-next.png`}
-                                style={styles.image}
-                            />
-                            <span>next track</span>
                         </li>
                         <li style={styles.li}>
                             <img
@@ -77,14 +61,8 @@ export const InfoModal = ({
                             <span>brightness down</span>
                         </li>
                         <li style={styles.li}>
-                            <img
-                                width='30'
-                                height='30'
-                                alt='left arrow key'
-                                src={`/images/arrow-left.png`}
-                                style={styles.image}
-                            />
-                            <span>left arrow key</span>
+                            <img width='30' height='30' alt='left / right arrow' src={`/images/arrow-left.png`} style={styles.image} />
+                            <span>left / right arrow</span>
                         </li>
                         <li style={styles.li}>
                             <img
@@ -100,11 +78,11 @@ export const InfoModal = ({
                             <img
                                 width='30'
                                 height='30'
-                                alt='right arrow key'
-                                src={`/images/arrow-right.png`}
+                                alt='mute'
+                                src={`/images/volume-icon.png`}
                                 style={styles.image}
                             />
-                            <span>right arrow key</span>
+                            <span>mute toggle</span>
                         </li>
                         <li style={styles.li}>
                             <img

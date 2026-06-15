@@ -29,6 +29,7 @@ var VolumeKeyMapping = map[string]bool{
 	"volume_up":   true,
 	"volume_down": true,
 	"current":     true,
+	"mute":        true,
 }
 
 // Response represents the default api response structure
@@ -40,6 +41,7 @@ type Response struct {
 type VolumeResponse struct {
 	Status string `json:"status"`
 	Volume string `json:"volume,omitempty"`
+	Muted  bool   `json:"muted"`
 }
 
 type QRResponse struct {
@@ -95,22 +97,45 @@ func HandleMediaKeyStroke() http.HandlerFunc {
 	}
 }
 
-// HandleVolume controls os volume actions (current, volume_up, or volume_down) based on the provided action query parameter
+// HandleVolume controls os volume actions (current, volume_up, volume_down, mute) based on the provided action query parameter
 func HandleVolume() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		action := r.FormValue("action")
 
-		if VolumeKeyMapping[action] {
-			resp, err := adjustVolume(action)
+		if !VolumeKeyMapping[action] {
+			apiResponse(w, 400, &VolumeResponse{Status: "invalid_command"})
+			return
+		}
+
+		if action == "mute" {
+			muted, err := getMuteState()
 			if err != nil {
 				log.Error(err)
 				apiResponse(w, 500, &VolumeResponse{Status: err.Error()})
 				return
 			}
-			apiResponse(w, 200, &VolumeResponse{Volume: resp, Status: "success"})
+			if err := setMuteState(!muted); err != nil {
+				log.Error(err)
+				apiResponse(w, 500, &VolumeResponse{Status: err.Error()})
+				return
+			}
+			apiResponse(w, 200, &VolumeResponse{Status: "success", Muted: !muted})
 			return
 		}
-		apiResponse(w, 400, &VolumeResponse{Status: "invalid_command"})
+
+		vol, err := adjustVolume(action)
+		if err != nil {
+			log.Error(err)
+			apiResponse(w, 500, &VolumeResponse{Status: err.Error()})
+			return
+		}
+		muted, err := getMuteState()
+		if err != nil {
+			log.Error(err)
+			apiResponse(w, 500, &VolumeResponse{Status: err.Error()})
+			return
+		}
+		apiResponse(w, 200, &VolumeResponse{Volume: vol, Muted: muted, Status: "success"})
 	}
 }
 
@@ -156,6 +181,29 @@ func triggerKeystroke(keyCode int) error {
 		return err
 	}
 	return nil
+}
+
+// getMuteState returns the current output mute state
+func getMuteState() (bool, error) {
+	script := "output muted of (get volume settings)"
+	cmd := exec.Command("osascript", "-e", script)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return false, err
+	}
+	return strings.TrimSpace(out.String()) == "true", nil
+}
+
+// setMuteState sets the output mute state
+func setMuteState(muted bool) error {
+	muteWord := "without"
+	if muted {
+		muteWord = "with"
+	}
+	script := fmt.Sprintf("set volume %s output muted", muteWord)
+	cmd := exec.Command("osascript", "-e", script)
+	return cmd.Run()
 }
 
 // adjustVolume is a helper for managing system volume: getting, increasing, or decreasing it

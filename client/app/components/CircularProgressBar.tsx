@@ -8,9 +8,10 @@ import {externalMediaSource} from '../api'
 
 interface CircularProgressBarProps {
   volume: string;
+  muted: boolean;
 }
 
-export const CircularProgressBar = ({ volume }: CircularProgressBarProps) => {
+export const CircularProgressBar = ({ volume, muted }: CircularProgressBarProps) => {
   const prevVolume = usePrevious(volume);
 
   if (volume == externalMediaSource) {
@@ -20,7 +21,7 @@ export const CircularProgressBar = ({ volume }: CircularProgressBarProps) => {
   }
 
   return (
-    <div style={{ width: '60px', margin: '10px' }}>
+    <div style={{ width: '60px', margin: '10px', opacity: muted ? 0.35 : 1, transition: 'opacity 0.2s' }}>
       <AnimatedProgressProvider
         valueStart={prevVolume}
         valueEnd={volume}

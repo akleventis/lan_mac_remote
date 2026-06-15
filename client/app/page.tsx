@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ToastContainer } from "react-toastify";
 import { Poppins } from 'next/font/google';
-import { triggerKeyPress, triggerMediaKeyPress, adjustVolume, triggerSleep, externalMediaSource } from './api';
+import { triggerKeyPress, triggerMediaKeyPress, adjustVolume, toggleMute, triggerSleep, externalMediaSource } from './api';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { BrightnessControls } from './components/BrightnessControls';
 import { VolumeControls } from './components/VolumeControls';
@@ -18,12 +18,13 @@ const poppins = Poppins({
 
 export default function HomeScreen() {
   const [volume, setVolume] = useState('');
+  const [muted, setMuted] = useState(false);
   const [color, setColor] = useLocalStorage('backgroundColor', '#434343');
   const [isColorsOpen, setIsColorsOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   useEffect(() => {
-    adjustVolume('current', volume, setVolume); 
+    adjustVolume('current', volume, setVolume, setMuted);
   }, []);
 
   return (
@@ -130,9 +131,28 @@ export default function HomeScreen() {
 
           <BrightnessControls />
 
-          <CircularProgressBar volume={volume} />
+          <div style={styles.volumeCenter}>
+            <CircularProgressBar volume={volume} muted={muted} />
+            {volume !== externalMediaSource && (
+              <button
+                style={{
+                  ...styles.muteButton,
+                  opacity: muted ? 0.4 : 1,
+                  borderColor: muted ? '#FF6B6B' : '#FFFFFF',
+                }}
+                onClick={() => toggleMute(setMuted)}
+              >
+                <img
+                  width='18'
+                  height='18'
+                  alt={muted ? 'unmute' : 'mute'}
+                  src='/images/volume-icon.png'
+                />
+              </button>
+            )}
+          </div>
 
-          {volume !== externalMediaSource && <VolumeControls setVolume={setVolume} volume={volume} />}
+          {volume !== externalMediaSource && <VolumeControls setVolume={setVolume} volume={volume} setMuted={setMuted} />}
         </div>
 
         <button style={styles.item} onClick={() => { setIsColorsOpen(true) }}>
@@ -175,7 +195,7 @@ const styles = {
     height: 60,
     margin: 10,
     padding: 7,
-    borderWidth: 3,
+    borderWidth: 2,
     borderRadius: 50,
     borderStyle: 'solid',
     background: 'none',
@@ -198,5 +218,24 @@ const styles = {
     marginLeft: 80,
     marginRight: 80,
     gap: 25,
+  },
+  volumeCenter: {
+    display: 'flex',
+    flexDirection: 'column' as 'column',
+    alignItems: 'center',
+    gap: 4,
+  },
+  muteButton: {
+    width: 32,
+    height: 32,
+    padding: 4,
+    borderWidth: 1.5,
+    borderRadius: 50,
+    borderStyle: 'solid',
+    background: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'opacity 0.2s, border-color 0.2s',
   },
 };

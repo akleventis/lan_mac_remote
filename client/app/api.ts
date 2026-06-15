@@ -20,6 +20,7 @@ interface DefaultResponse {
 interface VolumeResponse {
   status: string;
   volume: string;
+  muted: boolean;
 }
 
 // RequestOptions houses information for an api request
@@ -102,7 +103,8 @@ export const triggerMediaKeyPress = async (key_action: string) => {
 export const adjustVolume = async (
   key_action: string,
   volume: string,
-  setVolume: React.Dispatch<React.SetStateAction<string>>
+  setVolume: React.Dispatch<React.SetStateAction<string>>,
+  setMuted?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (volume == externalMediaSource) {
     setVolume(externalMediaSource)
@@ -128,8 +130,26 @@ export const adjustVolume = async (
     } else {
       setVolume(data.volume);
     }
+    if (setMuted) setMuted(data.muted);
   } catch (error) {
     console.warn(`adjustVolume error: ${error}`);
+  }
+};
+
+// toggleMute toggles the system output mute state
+export const toggleMute = async (
+  setMuted: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  try {
+    const data = await apiRequest<VolumeResponse>({
+      method: "GET",
+      endpoint: "volume",
+      queryParams: { action: "mute" },
+    });
+    if (!data) return;
+    setMuted(data.muted);
+  } catch (error) {
+    console.warn(`toggleMute error: ${error}`);
   }
 };
 

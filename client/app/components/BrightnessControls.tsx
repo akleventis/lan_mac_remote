@@ -41,6 +41,7 @@ const styles = {
   },
   column: {
     borderStyle: 'solid',
+    borderWidth: 2,
     borderRadius: 50,
     borderColor: '#FFFFFF',
     maxWidth: 70,

@@ -4,18 +4,20 @@ import { adjustVolume } from '../../app/api';
 interface VolumeControlsProps {
   volume: string;
   setVolume: React.Dispatch<React.SetStateAction<string>>;
+  setMuted: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 
 export const VolumeControls = ({
   setVolume,
-  volume
+  volume,
+  setMuted,
 }: VolumeControlsProps) => {
   return (
     <div style={styles.column}>
       <button
         style={styles.item}
-        onClick={() => adjustVolume('volume_up', volume, setVolume)}
+        onClick={() => adjustVolume('volume_up', volume, setVolume, setMuted)}
       >
         <img
           width='25'
@@ -26,7 +28,7 @@ export const VolumeControls = ({
       </button>
       <button
         style={styles.item}
-        onClick={() => adjustVolume('volume_down', volume, setVolume)}
+        onClick={() => adjustVolume('volume_down', volume, setVolume, setMuted)}
       >
         <img
           width='25'
@@ -50,6 +52,7 @@ const styles = {
   },
   column: {
     borderStyle: 'solid',
+    borderWidth: 2,
     borderRadius: 50,
     borderColor: '#FFFFFF',
     maxWidth: 70,
