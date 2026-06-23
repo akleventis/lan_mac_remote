@@ -46,6 +46,16 @@
             color: #f90;
             font-size: 0.8rem;
         }
+        #qrError {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.6rem 0.8rem;
+            background: #4a0000;
+            border: 1px solid #f55;
+            border-radius: 6px;
+            color: #f99;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -56,25 +66,31 @@
         <div id="publicWarning">
             Public network detected — device connection may be blocked.
         </div>
+        <div id="qrError">
+            Couldn't reach the Mac Remote server — it may not have started.
+            Quit and reopen the app.
+        </div>
     </div>
     <script>
         async function loadQRCode() {
+            const serverURL = __SERVER_URL__;
+            const isPublicNetwork = __IS_PUBLIC_NETWORK__;
+            document.getElementById("serverURL").innerText = serverURL;
+            if (isPublicNetwork) {
+                document.getElementById("publicWarning").style.display = "block";
+            }
+            // Hit our own server over loopback so the desktop UI doesn't depend on the LAN interface or firewall (the QR still encodes the LAN IP).
+            const api = new URL(serverURL);
+            api.hostname = "127.0.0.1";
             try {
-                const serverURL = __SERVER_URL__;
-                const isPublicNetwork = __IS_PUBLIC_NETWORK__;
-                document.getElementById("serverURL").innerText = serverURL;
-                if (isPublicNetwork) {
-                    document.getElementById("publicWarning").style.display = "block";
-                }
-                const response = await fetch(serverURL + "/get_qr");
-                if (!response.ok) {
-                    if (response.status === 500) throw new Error("Error: Could not retrieve QR code");
-                    return;
-                }
+                const response = await fetch(api.origin + "/get_qr");
+                if (!response.ok) throw new Error(`status ${response.status}`);
                 const data = await response.json();
                 document.getElementById("qrCode").src = data.qr_code;
             } catch (error) {
-                document.getElementById("serverURL").innerText = error.message;
+                document.getElementById("qrCode").style.display = "none";
+                document.getElementById("qrError").style.display = "block";
+                console.warn(`QR load failed: ${error}`);
             }
         }
         loadQRCode();

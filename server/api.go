@@ -58,5 +58,7 @@ func main() {
 	mux.Handle("/", staticHandler(subFS))
 
 	fmt.Printf("Server running on: %s", LanAddress)
-	http.ListenAndServe(LanAddress, cors.Default().Handler(mux))
+	// Bind all interfaces so the phone reaches us over the LAN and the desktop UI
+	// can use loopback; LanAddress (LAN IP) is still what the QR encodes.
+	http.ListenAndServe(fmt.Sprintf(":%d", port), cors.Default().Handler(mux))
 }
