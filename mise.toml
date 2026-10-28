@@ -2,3 +2,37 @@
 node = "24"
 go = "1.26"
 bun = "1.3"
+gitleaks = "8"
+
+[tasks.setup]
+description = "Install the secret-scanning hook and dependencies"
+run = [
+  "git config core.hooksPath .githooks",
+  "npm --prefix client ci",
+  "cd electrobun && bun install --frozen-lockfile",
+  "go mod download",
+]
+
+[tasks.dev]
+description = "Run the Go server and the Next.js dev server on the local network"
+run = "scripts/start_app_dev.sh"
+
+[tasks.build]
+description = "Build the Next.js export and embed it in go_binary"
+run = "scripts/build_app.sh"
+
+[tasks.package]
+description = "Build the Electrobun app and package Mac Remote.dmg"
+run = "scripts/build_dmg.sh"
+
+[tasks.test]
+description = "Go tests"
+run = "go test ./..."
+
+[tasks.lint]
+description = "gofmt, go vet and a TypeScript check of the client"
+run = [
+  "test -z \"$(gofmt -l server)\" || { gofmt -l server; exit 1; }",
+  "go vet ./...",
+  "cd client && npx tsc --noEmit",
+]
