@@ -1,0 +1,3 @@
+#!/bin/sh
+# Blocks commits that contain secrets. Installed by `mise run setup`.
+exec mise exec -- gitleaks git --pre-commit --staged --redact --verbose

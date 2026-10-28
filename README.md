@@ -73,14 +73,17 @@ You will need to update two settings in macOS to grant permission:
 
 
 ### Setup
-1. Ensure [go 1.23](https://go.dev/doc/install) is installed on system
-1. Ensure [Bun](https://bun.sh) is installed
-1. Install qrencode for QR code generation of the IP address landing page via mobile device
-    - `brew install qrencode`
-1. Clone repository 
-    - `git clone https://github.com/akleventis/lan_mac_remote.git`
-1. Install npm dependencies
-    -  `cd client && npm install`
+Runtimes (Node 24, Go 1.26, Bun 1.3) are pinned in `mise.toml`.
+
+```bash
+git clone https://github.com/akleventis/lan_mac_remote.git && cd lan_mac_remote
+brew install qrencode   # QR code for the dev landing page
+mise install            # runtimes
+mise run setup          # secret-scanning hook + client, electrobun and Go dependencies
+mise run dev            # Go server + Next.js dev server on the local network
+```
+
+Other tasks: `mise run build` (Next.js export embedded in `go_binary`), `mise run package` (Mac Remote.dmg), `mise run test`, `mise run lint`. No secrets are needed.
 
 ### Scripts
 | file | description|

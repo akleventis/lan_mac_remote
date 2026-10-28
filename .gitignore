@@ -8,6 +8,12 @@ Mac Remote.app
 electrobun/build/
 electrobun/artifacts/
 electrobun/node_modules/
-electrobun/bun.lock
 assets/app.iconset/
 icon-composer.icon
+
+# Secrets and data never go in git
+.env*
+!.env.example
+*.csv
+*.db
+*.sqlite
